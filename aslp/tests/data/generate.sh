@@ -69,6 +69,20 @@ testcase    "ldrsw_reg_scale_ext_uxtw"   "ldrsw x1, [x2, w3, uxtw #0]"
 testcase    "ldrsw_reg_scale_ext_sxtw"   "ldrsw x1, [x2, w3, sxtw #0]"
 testcase    "ldrsw_reg_scale_ext_sxtx"   "ldrsw x1, [x2, x3, sxtx #0]"
 
+# SHA-1
+# SHA1C: SHA1 hash update (choose). SHA1C <Qd>, <Sn>, <Vm>.4S
+testcase    "sha1c"         "sha1c q5, s6, v1.4s"
+# SHA1H: SHA1 fixed rotate.
+testcase    "sha1h"         "sha1h s17, s6"
+# SHA1M: SHA1 hash update (majority).
+testcase    "sha1m"         "sha1c q5, s6, v1.4s"
+# SHA1P: SHA1 hash update (parity).
+testcase    "sha1p"         "sha1c q5, s6, v1.4s"
+# SHA1SU0: SHA1 schedule update 0.
+testcase    "sha1su0"       "sha1su0 v3.4s, v0.4s, v1.4s"
+# SHA1SU1: SHA1 schedule update 1.
+testcase    "sha1su1"       "sha1su1 v2.4s, v1.4s"
+
 # Misc.
 testcase    "csel"          "csel x10, x12, x14, hs"
 testcase    "ccmp"          "ccmp x22, x1, 13, eq"
@@ -76,9 +90,6 @@ testcase    "clz"           "clz x15, x3"
 testcase    "ldp"           "ldp x1, x2, [x3], #128"
 testcase    "stp"           "stp x1, x2, [x3], #128"
 testcase    "ucvtf"         "ucvtf d0, w2"
-testcase    "sha1h"         "sha1h s17, s6"
-testcase    "sha1su1"       "sha1su1 v2.4s, v1.4s"
-testcase    "sha1su0"       "sha1su0 v3.4s, v0.4s, v1.4s"
 testcase    "mrs"           "mrs x0, nzcv"
 testcase    "tbl"           "tbl v0.8b, {v0.16b}, v0.8b"
 testcase    "uqsub"         "uqsub v3.4s, v1.4s, v2.4s"
