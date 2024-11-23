@@ -71,6 +71,9 @@ name = "anyhow"
 version = "1.0.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4c95c10ba0b00a02636238b814946408b1322d5ac4760326e6fb8ec956d85775"
+dependencies = [
+ "backtrace",
+]
 
 [[package]]
 name = "autocfg"
@@ -453,6 +456,15 @@ name = "httpdate"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
+
+[[package]]
+name = "hwwasm"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "hwwasm-aslp",
+]
 
 [[package]]
 name = "hwwasm-aslp"

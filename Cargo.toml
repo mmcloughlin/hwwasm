@@ -1,6 +1,24 @@
+[package]
+name = "hwwasm"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+
+[dependencies]
+hwwasm-aslp = { path = "aslp" }
+clap = { workspace = true }
+anyhow = { workspace = true }
+
 [workspace]
 resolver = "2"
 members = [
     "aslp",
     "test-macros",
 ]
+
+[workspace.package]
+edition = "2021"
+
+[workspace.dependencies]
+clap = { version = "4.3", features = ["std", "derive"] }
+anyhow = { version = "1", features = ["std", "backtrace"] }
