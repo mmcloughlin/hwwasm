@@ -1,2 +1,1 @@
-Stmt_ConstDecl(Type_Bits(32),"Exp6__5",Expr_TApply("ROL.0",[32],[Expr_Slices(Expr_Array(Expr_Var("_Z"),6),[Slice_LoWd(0,32)]);30]))
-Stmt_Assign(LExpr_Array(LExpr_Var("_Z"),17),Expr_TApply("ZeroExtend.0",[32;128],[Expr_Var("Exp6__5");128]))
+Stmt_Assign(LExpr_Array(LExpr_Var("_Z"),17),Expr_TApply("ZeroExtend.0",[32;128],[Expr_TApply("rol_bits.0",[32;16],[Expr_Slices(Expr_Array(Expr_Var("_Z"),6),[Slice_LoWd(0,32)]);'0000000000011110']);128]))

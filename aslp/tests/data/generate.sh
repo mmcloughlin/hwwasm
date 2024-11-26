@@ -85,10 +85,11 @@ testcase    "sha1su0"       "sha1su0 v3.4s, v0.4s, v1.4s"
 testcase    "sha1su1"       "sha1su1 v2.4s, v1.4s"
 
 # SHA-256
+# SHA256H{,2} disabled due to large size of produced semantics.
 # SHA256H: SHA256 hash update (part 1).
-testcase    "sha256h"       "sha256h q5, q6, v1.4s"
+# testcase    "sha256h"       "sha256h q5, q6, v1.4s"
 # SHA256H2: SHA256 hash update (part 2).
-testcase    "sha256h2"      "sha256h2 q5, q6, v1.4s"
+# testcase    "sha256h2"      "sha256h2 q5, q6, v1.4s"
 # SHA256SU0: SHA256 schedule update 0.
 testcase    "sha256su0"      "sha256su0 v2.4s, v1.4s"
 # SHA256SU1: SHA256 schedule update 1.
