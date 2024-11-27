@@ -18,9 +18,18 @@ uint8x16_t vrev32q_u8(uint8x16_t vec) {
     );
 }
 
+uint32_t vgetq_lane_u32(uint32x4_t v, const int lane) {
+    switch (lane) {
+        case 0: return wasm_u32x4_extract_lane(v, 0);
+        case 1: return wasm_u32x4_extract_lane(v, 1);
+        case 2: return wasm_u32x4_extract_lane(v, 2);
+        case 3: return wasm_u32x4_extract_lane(v, 3);
+        default: __builtin_unreachable();
+    }
+}
+
 // TODO: uint32x4_t vld1q_u32(uint32_t const * ptr);
 // TODO: void vst1q_u32(uint32_t * ptr, uint32x4_t val);
-// TODO: uint32_t vgetq_lane_u32(uint32x4_t v, const int lane);
 // TODO: uint32x4_t vreinterpretq_u32_u8(uint8x16_t a);
 // TODO: uint8x16_t vreinterpretq_u8_u32(uint32x4_t a);
 // TODO: uint32x4_t vsha1cq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk);
