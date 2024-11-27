@@ -1,2 +1,6 @@
 # C
 *.o
+
+# Wasm
+*.wasm
+*.wat
