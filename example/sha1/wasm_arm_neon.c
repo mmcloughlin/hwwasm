@@ -28,10 +28,12 @@ uint32_t vgetq_lane_u32(uint32x4_t v, const int lane) {
     }
 }
 
+uint32x4_t vreinterpretq_u32_u8(uint8x16_t a) { return a; }
+
+uint8x16_t vreinterpretq_u8_u32(uint32x4_t a) { return a; }
+
 // TODO: uint32x4_t vld1q_u32(uint32_t const * ptr);
 // TODO: void vst1q_u32(uint32_t * ptr, uint32x4_t val);
-// TODO: uint32x4_t vreinterpretq_u32_u8(uint8x16_t a);
-// TODO: uint8x16_t vreinterpretq_u8_u32(uint32x4_t a);
 // TODO: uint32x4_t vsha1cq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk);
 // TODO: uint32x4_t vsha1pq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk);
 // TODO: uint32x4_t vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk);
