@@ -1,6 +1,9 @@
 use anyhow::Result;
 use clap::Parser as ClapParser;
-use hwwasm::translate::Translator;
+use hwwasm::{
+    ir,
+    translate::{Target, Translator},
+};
 use hwwasm_aslp::parser;
 use std::{fs, path::PathBuf};
 
@@ -23,8 +26,23 @@ fn main() -> Result<()> {
     let block = parser::parse(&src)?;
 
     // Translate
-    let translator = Translator::new();
-    translator.translate(&block);
+    let mut translator = Translator::new();
+
+    // sha1c q5, s6, v1.4s
+    //
+    // Args:
+    //  hash_abcd  register: Qd
+    //  hash_e  register: Sn
+    //  wk  register: Vm.4S
+    let z = Target::Var("_Z".to_string());
+    translator.arg(ir::Type::Int(128), Target::Index(Box::new(z.clone()), 5));
+    translator.arg(ir::Type::Int(32), Target::Index(Box::new(z.clone()), 6));
+    translator.arg(ir::Type::Int(128), Target::Index(Box::new(z.clone()), 1));
+
+    translator.translate(&block)?;
+
+    // Print
+    println!("{:#?}", translator.function());
 
     Ok(())
 }

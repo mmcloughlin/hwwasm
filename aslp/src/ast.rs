@@ -71,6 +71,13 @@ pub enum Expr {
 }
 
 impl Expr {
+    pub fn as_lit_bits(&self) -> Option<&String> {
+        match self {
+            Expr::LitBits(b) => Some(b),
+            _ => None,
+        }
+    }
+
     pub fn as_lit_int(&self) -> Option<&String> {
         match self {
             Expr::LitInt(i) => Some(i),
