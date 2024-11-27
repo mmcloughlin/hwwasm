@@ -5,7 +5,7 @@ WASM_CC=$(WASI_SDK_PATH)/bin/clang
 WASM_CFLAGS=$(CFLAGS) -msimd128
 
 .PHONY: all
-all: sha1.o sha1.wasm sha1.wat
+all: sha1.o sha1.wasm sha1.wat wasm_arm_neon.wasm wasm_arm_neon.wat
 
 %.wasm: %.c
 	$(WASM_CC) $(WASM_CFLAGS) -c -o $@ $<
