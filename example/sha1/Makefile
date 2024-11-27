@@ -4,10 +4,14 @@ CFLAGS=-Wall -Wextra -Werror -O3
 WASM_CC=$(WASI_SDK_PATH)/bin/clang
 WASM_CFLAGS=$(CFLAGS) -msimd128
 
-.PHONY: all
-all: sha1.o sha1.wasm sha1.wat wasm_arm_neon.wasm wasm_arm_neon.wat
+TEST_BINARY=sha1_test
 
-%.wasm: %.c
+.PHONY: all
+all: $(TEST_BINARY) sha1.o sha1.o.wasm sha1.o.wat wasm_arm_neon.o.wasm wasm_arm_neon.o.wat
+
+$(TEST_BINARY): sha1.o
+
+%.o.wasm: %.c
 	$(WASM_CC) $(WASM_CFLAGS) -c -o $@ $<
 
 %.wat: %.wasm
@@ -15,4 +19,4 @@ all: sha1.o sha1.wasm sha1.wat wasm_arm_neon.wasm wasm_arm_neon.wat
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.wasm
+	$(RM) $(TEST_BINARY) *.o *.wasm *.wat

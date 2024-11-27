@@ -19,6 +19,14 @@
 #define K2 0x8f1bbcdc
 #define K3 0xca62c1d6
 
+void sha1_state_init(uint32_t state[5]) {
+    state[0] = 0x67452301;
+    state[1] = 0xefcdab89;
+    state[2] = 0x98badcfe;
+    state[3] = 0x10325476;
+    state[4] = 0xc3d2e1f0;
+}
+
 void sha1_blocks(uint32_t state[5], const uint8_t *data, size_t size) {
     uint32x4_t abcd, abcd_saved;
     uint32x4_t t0, t1;
