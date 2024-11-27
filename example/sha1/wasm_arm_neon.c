@@ -4,7 +4,10 @@ uint32x4_t vaddq_u32(uint32x4_t a, uint32x4_t b) {
     return wasm_i32x4_add(a, b);
 }
 
-// TODO: uint32x4_t vdupq_n_u32(uint32_t value);
+uint32x4_t vdupq_n_u32(uint32_t value) {
+    return wasm_u32x4_splat(value);
+}
+
 // TODO: uint32x4_t vld1q_u32(uint32_t const * ptr);
 // TODO: void vst1q_u32(uint32_t * ptr, uint32x4_t val);
 // TODO: uint8x16_t vrev32q_u8(uint8x16_t vec);
