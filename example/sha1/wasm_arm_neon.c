@@ -8,9 +8,18 @@ uint32x4_t vdupq_n_u32(uint32_t value) {
     return wasm_u32x4_splat(value);
 }
 
+uint8x16_t vrev32q_u8(uint8x16_t vec) {
+    const v128_t zero = wasm_i8x16_splat(0);
+    return wasm_i8x16_shuffle(vec, zero,
+         3,  2,  1,  0,
+         7,  6,  5,  4,
+        11, 10,  9,  8,
+        15, 14, 13, 12
+    );
+}
+
 // TODO: uint32x4_t vld1q_u32(uint32_t const * ptr);
 // TODO: void vst1q_u32(uint32_t * ptr, uint32x4_t val);
-// TODO: uint8x16_t vrev32q_u8(uint8x16_t vec);
 // TODO: uint32_t vgetq_lane_u32(uint32x4_t v, const int lane);
 // TODO: uint32x4_t vreinterpretq_u32_u8(uint8x16_t a);
 // TODO: uint8x16_t vreinterpretq_u8_u32(uint32x4_t a);
