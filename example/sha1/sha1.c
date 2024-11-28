@@ -5,13 +5,7 @@
 
 #include "sha1.h"
 
-#if defined(__arm64__)
-#include <arm_neon.h>
-#endif
-
-#if defined(__wasm__)
-#include "wasm_arm_neon.h"
-#endif
+#include "intrinsics.h"
 
 // Round constants
 #define K0 0x5a827999
