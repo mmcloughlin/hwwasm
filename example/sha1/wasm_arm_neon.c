@@ -141,5 +141,10 @@ uint32x4_t vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15) {
     return result;
 }
 
-// TODO: uint32x4_t vld1q_u32(uint32_t const * ptr);
-// TODO: void vst1q_u32(uint32_t * ptr, uint32x4_t val);
+uint32x4_t vld1q_u32(uint32_t const *ptr) {
+    return wasm_v128_load(ptr);
+}
+
+void vst1q_u32(uint32_t *ptr, uint32x4_t val) {
+    wasm_v128_store(ptr, val);
+}
