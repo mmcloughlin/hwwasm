@@ -38,6 +38,7 @@ uint8x16_t vreinterpretq_u8_u32(uint32x4_t a) {
 
 #define SHA1_CHOOSE(X, Y, Z) (((Y ^ Z) & X) ^ Z)
 #define SHA1_PARITY(X, Y, Z) (X ^ Y ^ Z)
+#define SHA1_MAJORITY(X, Y, Z) ((X & Y) | ((X | Y) & Z))
 
 #define SHA1_ROUND(F, I)                                                                    \
     do {                                                                                    \
@@ -80,9 +81,23 @@ uint32x4_t vsha1pq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
     return wasm_u32x4_make(a, b, c, d);
 }
 
+uint32x4_t vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
+    uint32_t a = wasm_u32x4_extract_lane(hash_abcd, 0);
+    uint32_t b = wasm_u32x4_extract_lane(hash_abcd, 1);
+    uint32_t c = wasm_u32x4_extract_lane(hash_abcd, 2);
+    uint32_t d = wasm_u32x4_extract_lane(hash_abcd, 3);
+    uint32_t e = hash_e;
+
+    SHA1_ROUND(SHA1_MAJORITY, 0);
+    SHA1_ROUND(SHA1_MAJORITY, 1);
+    SHA1_ROUND(SHA1_MAJORITY, 2);
+    SHA1_ROUND(SHA1_MAJORITY, 3);
+
+    return wasm_u32x4_make(a, b, c, d);
+}
+
 // TODO: uint32x4_t vld1q_u32(uint32_t const * ptr);
 // TODO: void vst1q_u32(uint32_t * ptr, uint32x4_t val);
-// TODO: uint32x4_t vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk);
 // TODO: uint32_t vsha1h_u32(uint32_t hash_e);
 // TODO: uint32x4_t vsha1su0q_u32(uint32x4_t w0_3, uint32x4_t w4_7, uint32x4_t w8_11);
 // TODO: uint32x4_t vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15);
