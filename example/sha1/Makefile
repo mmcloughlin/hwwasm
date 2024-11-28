@@ -7,7 +7,7 @@ WASM_CFLAGS=$(CFLAGS) -msimd128
 TEST_BINARY=sha1_test
 
 .PHONY: all
-all: $(TEST_BINARY) sha1.o sha1.o.wasm sha1.o.wat wasm_arm_neon.o.wasm wasm_arm_neon.o.wat
+all: $(TEST_BINARY) $(TEST_BINARY).wasm $(TEST_BINARY).wat sha1.o sha1.o.wasm sha1.o.wat wasm_arm_neon.o.wasm wasm_arm_neon.o.wat
 
 $(TEST_BINARY): sha1.o
 
