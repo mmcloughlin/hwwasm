@@ -96,8 +96,11 @@ uint32x4_t vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
     return wasm_u32x4_make(a, b, c, d);
 }
 
+uint32_t vsha1h_u32(uint32_t hash_e) {
+    return __builtin_rotateleft32(hash_e, 30);
+}
+
 // TODO: uint32x4_t vld1q_u32(uint32_t const * ptr);
 // TODO: void vst1q_u32(uint32_t * ptr, uint32x4_t val);
-// TODO: uint32_t vsha1h_u32(uint32_t hash_e);
 // TODO: uint32x4_t vsha1su0q_u32(uint32x4_t w0_3, uint32x4_t w4_7, uint32x4_t w8_11);
 // TODO: uint32x4_t vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15);
