@@ -115,7 +115,31 @@ uint32x4_t vsha1su0q_u32(uint32x4_t w0_3, uint32x4_t w4_7, uint32x4_t w8_11) {
     return result;
 }
 
+uint32x4_t vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15) {
+    v128_t operand1 = tw0_3;
+    v128_t operand2 = w12_15;
+    v128_t result;
+
+    // bits(128) T = operand1 EOR LSR(operand2, 32);
+    v128_t T = operand1 ^ wasm_i32x4_shr(operand2, 32);
+
+    uint32_t T0 = wasm_i32x4_extract_lane(T, 0);
+    uint32_t T1 = wasm_i32x4_extract_lane(T, 1);
+    uint32_t T2 = wasm_i32x4_extract_lane(T, 2);
+    uint32_t T3 = wasm_i32x4_extract_lane(T, 3);
+
+    result = wasm_i32x4_make(
+        // result<31:0>   = ROL(T<31:0>,   1);
+        __builtin_rotateleft32(T0, 1),
+        // result<63:32>  = ROL(T<63:32>,  1);
+        __builtin_rotateleft32(T1, 1),
+        // result<95:64>  = ROL(T<95:64>,  1);
+        __builtin_rotateleft32(T2, 1),
+        // result<127:96> = ROL(T<127:96>, 1) EOR ROL(T<31:0>, 2);
+        __builtin_rotateleft32(T3, 1) ^ __builtin_rotateleft32(T0, 2));
+
+    return result;
+}
+
 // TODO: uint32x4_t vld1q_u32(uint32_t const * ptr);
 // TODO: void vst1q_u32(uint32_t * ptr, uint32x4_t val);
-
-// TODO: uint32x4_t vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15);
