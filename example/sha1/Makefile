@@ -5,13 +5,17 @@ WASM_CC=$(WASI_SDK_PATH)/bin/clang
 WASM_CFLAGS=$(CFLAGS) -msimd128
 
 TEST_BINARY=sha1_test
+BENCH_BINARY=sha1_bench
 
 .PHONY: all
-all: $(TEST_BINARY) $(TEST_BINARY).wasm $(TEST_BINARY).wat sha1.o sha1.o.wasm sha1.o.wat wasm_arm_neon.o.wasm wasm_arm_neon.o.wat
+all: \
+	$(TEST_BINARY) $(TEST_BINARY).wasm $(TEST_BINARY).wat \
+	$(BENCH_BINARY) $(BENCH_BINARY).wasm \
+	sha1.o sha1.o.wasm sha1.o.wat wasm_arm_neon.o.wasm wasm_arm_neon.o.wat
 
-$(TEST_BINARY): sha1.o
+$(TEST_BINARY) $(BENCH_BINARY): sha1.o
 
-$(TEST_BINARY).wasm: sha1.o.wasm wasm_arm_neon.o.wasm
+$(TEST_BINARY).wasm $(BENCH_BINARY).wasm: sha1.o.wasm wasm_arm_neon.o.wasm
 
 %.wasm: %.c
 	$(WASM_CC) $(WASM_CFLAGS) -o $@ $^
@@ -28,4 +32,4 @@ format:
 
 .PHONY: clean
 clean:
-	$(RM) $(TEST_BINARY) *.o *.wasm *.wat
+	$(RM) $(TEST_BINARY) $(BENCH_BINARY) *.o *.wasm *.wat

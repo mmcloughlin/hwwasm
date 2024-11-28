@@ -1,4 +1,5 @@
 sha1_test
+sha1_bench
 
 # C
 *.o
