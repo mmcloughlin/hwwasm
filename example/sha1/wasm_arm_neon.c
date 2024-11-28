@@ -100,7 +100,22 @@ uint32_t vsha1h_u32(uint32_t hash_e) {
     return __builtin_rotateleft32(hash_e, 30);
 }
 
+uint32x4_t vsha1su0q_u32(uint32x4_t w0_3, uint32x4_t w4_7, uint32x4_t w8_11) {
+    v128_t operand1 = w0_3;
+    v128_t operand2 = w4_7;
+    v128_t operand3 = w8_11;
+
+    // result = operand2<63:0> : operand1<127:64>;
+    v128_t result =
+        wasm_i64x2_make(wasm_i64x2_extract_lane(operand2, 0), wasm_i64x2_extract_lane(operand1, 1));
+
+    // result = result EOR operand1 EOR operand3;
+    result ^= operand1 ^ operand3;
+
+    return result;
+}
+
 // TODO: uint32x4_t vld1q_u32(uint32_t const * ptr);
 // TODO: void vst1q_u32(uint32_t * ptr, uint32x4_t val);
-// TODO: uint32x4_t vsha1su0q_u32(uint32x4_t w0_3, uint32x4_t w4_7, uint32x4_t w8_11);
+
 // TODO: uint32x4_t vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15);
