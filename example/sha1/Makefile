@@ -11,6 +11,11 @@ all: $(TEST_BINARY) sha1.o sha1.o.wasm sha1.o.wat wasm_arm_neon.o.wasm wasm_arm_
 
 $(TEST_BINARY): sha1.o
 
+$(TEST_BINARY).wasm: sha1.o.wasm wasm_arm_neon.o.wasm
+
+%.wasm: %.c
+	$(WASM_CC) $(WASM_CFLAGS) -o $@ $^
+
 %.o.wasm: %.c
 	$(WASM_CC) $(WASM_CFLAGS) -c -o $@ $<
 
