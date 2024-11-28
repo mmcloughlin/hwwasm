@@ -17,6 +17,10 @@ $(TEST_BINARY): sha1.o
 %.wat: %.wasm
 	wasm2wat $< -o $@
 
+.PHONY: format
+format:
+	clang-format --style=file -i *.c *.h
+
 .PHONY: clean
 clean:
 	$(RM) $(TEST_BINARY) *.o *.wasm *.wat

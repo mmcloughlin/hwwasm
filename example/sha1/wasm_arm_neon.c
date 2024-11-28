@@ -10,39 +10,44 @@ uint32x4_t vdupq_n_u32(uint32_t value) {
 
 uint8x16_t vrev32q_u8(uint8x16_t vec) {
     const v128_t zero = wasm_i8x16_splat(0);
-    return wasm_i8x16_shuffle(vec, zero,
-         3,  2,  1,  0,
-         7,  6,  5,  4,
-        11, 10,  9,  8,
-        15, 14, 13, 12
-    );
+    return wasm_i8x16_shuffle(vec, zero, 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12);
 }
 
 uint32_t vgetq_lane_u32(uint32x4_t v, const int lane) {
     switch (lane) {
-        case 0: return wasm_u32x4_extract_lane(v, 0);
-        case 1: return wasm_u32x4_extract_lane(v, 1);
-        case 2: return wasm_u32x4_extract_lane(v, 2);
-        case 3: return wasm_u32x4_extract_lane(v, 3);
-        default: __builtin_unreachable();
+        case 0:
+            return wasm_u32x4_extract_lane(v, 0);
+        case 1:
+            return wasm_u32x4_extract_lane(v, 1);
+        case 2:
+            return wasm_u32x4_extract_lane(v, 2);
+        case 3:
+            return wasm_u32x4_extract_lane(v, 3);
+        default:
+            __builtin_unreachable();
     }
 }
 
-uint32x4_t vreinterpretq_u32_u8(uint8x16_t a) { return a; }
+uint32x4_t vreinterpretq_u32_u8(uint8x16_t a) {
+    return a;
+}
 
-uint8x16_t vreinterpretq_u8_u32(uint32x4_t a) { return a; }
+uint8x16_t vreinterpretq_u8_u32(uint32x4_t a) {
+    return a;
+}
 
 #define SHA1_CHOOSE(X, Y, Z) (((Y ^ Z) & X) ^ Z)
 
-#define SHA1_ROUND(F, I) do { \
-        uint32_t f = F(b, c, d); \
+#define SHA1_ROUND(F, I)                                                                    \
+    do {                                                                                    \
+        uint32_t f = F(b, c, d);                                                            \
         uint32_t t = __builtin_rotateleft32(a, 5) + f + e + wasm_u32x4_extract_lane(wk, I); \
-        e = d; \
-        d = c; \
-        c = __builtin_rotateleft32(b, 30); \
-        b = a; \
-        a = t; \
-    } while(0)
+        e = d;                                                                              \
+        d = c;                                                                              \
+        c = __builtin_rotateleft32(b, 30);                                                  \
+        b = a;                                                                              \
+        a = t;                                                                              \
+    } while (0)
 
 uint32x4_t vsha1cq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
     uint32_t a = wasm_u32x4_extract_lane(hash_abcd, 0);

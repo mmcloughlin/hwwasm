@@ -31,7 +31,7 @@ void sha1_blocks(uint32_t state[5], const uint8_t *data, size_t size) {
     uint32x4_t abcd, abcd_saved;
     uint32x4_t t0, t1;
     uint32x4_t m0, m1, m2, m3;
-    uint32_t   e0, e0_saved, e1;
+    uint32_t e0, e0_saved, e1;
 
     // Load state
     abcd = vld1q_u32(&state[0]);
@@ -43,10 +43,10 @@ void sha1_blocks(uint32_t state[5], const uint8_t *data, size_t size) {
         e0_saved = e0;
 
         // Load message
-        m0 = vld1q_u32((const uint32_t*)(data));
-        m1 = vld1q_u32((const uint32_t*)(data + 16));
-        m2 = vld1q_u32((const uint32_t*)(data + 32));
-        m3 = vld1q_u32((const uint32_t*)(data + 48));
+        m0 = vld1q_u32((const uint32_t *)(data));
+        m1 = vld1q_u32((const uint32_t *)(data + 16));
+        m2 = vld1q_u32((const uint32_t *)(data + 32));
+        m3 = vld1q_u32((const uint32_t *)(data + 48));
 
         // Reverse for little endian
         m0 = vreinterpretq_u32_u8(vrev32q_u8(vreinterpretq_u8_u32(m0)));
