@@ -1,5 +1,9 @@
 #include "wasm_arm_neon.h"
 
+static v128_t v128_zero() {
+    return wasm_i8x16_splat(0);
+}
+
 uint32x4_t vaddq_u32(uint32x4_t a, uint32x4_t b) {
     return wasm_i32x4_add(a, b);
 }
@@ -9,8 +13,8 @@ uint32x4_t vdupq_n_u32(uint32_t value) {
 }
 
 uint8x16_t vrev32q_u8(uint8x16_t vec) {
-    const v128_t zero = wasm_i8x16_splat(0);
-    return wasm_i8x16_shuffle(vec, zero, 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12);
+    return wasm_i8x16_shuffle(vec, v128_zero(), 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13,
+                              12);
 }
 
 uint32_t vgetq_lane_u32(uint32x4_t v, const int lane) {
@@ -107,7 +111,7 @@ uint32x4_t vsha1su0q_u32(uint32x4_t w0_3, uint32x4_t w4_7, uint32x4_t w8_11) {
 
     // result = operand2<63:0> : operand1<127:64>;
     v128_t result =
-        wasm_i64x2_make(wasm_i64x2_extract_lane(operand2, 0), wasm_i64x2_extract_lane(operand1, 1));
+        wasm_i64x2_make(wasm_i64x2_extract_lane(operand1, 1), wasm_i64x2_extract_lane(operand2, 0));
 
     // result = result EOR operand1 EOR operand3;
     result ^= operand1 ^ operand3;
@@ -121,12 +125,12 @@ uint32x4_t vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15) {
     v128_t result;
 
     // bits(128) T = operand1 EOR LSR(operand2, 32);
-    v128_t T = operand1 ^ wasm_i32x4_shr(operand2, 32);
+    v128_t T = operand1 ^ wasm_i32x4_shuffle(operand2, v128_zero(), 1, 2, 3, 4);
 
-    uint32_t T0 = wasm_i32x4_extract_lane(T, 0);
-    uint32_t T1 = wasm_i32x4_extract_lane(T, 1);
-    uint32_t T2 = wasm_i32x4_extract_lane(T, 2);
-    uint32_t T3 = wasm_i32x4_extract_lane(T, 3);
+    uint32_t T0 = wasm_u32x4_extract_lane(T, 0);
+    uint32_t T1 = wasm_u32x4_extract_lane(T, 1);
+    uint32_t T2 = wasm_u32x4_extract_lane(T, 2);
+    uint32_t T3 = wasm_u32x4_extract_lane(T, 3);
 
     result = wasm_i32x4_make(
         // result<31:0>   = ROL(T<31:0>,   1);
