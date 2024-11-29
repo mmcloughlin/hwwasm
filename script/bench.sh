@@ -48,6 +48,7 @@ make -C example/sha1 clean all
 # Build wasmtime fork.
 (
     cd "${HWWASM_WASMTIME_DIR}"
+    cargo clean
     cargo build --release
 )
 wasmtime_hwwasm="${HWWASM_WASMTIME_DIR}/target/release/wasmtime"
