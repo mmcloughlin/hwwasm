@@ -1,9 +1,0 @@
-{
-  "name": "vdupq_n_u32",
-  "timestamp": "2024-11-29T22:19:59",
-  "hwwasm_git_version": "69642418ef28",
-  "wasmtime_baseline_version": "wasmtime 27.0.0",
-  "wasmtime_hwwasm_git_version": "78d809c6f827",
-  "wasmtime_hwwasm_git_commit_subject": "cranelift: `vdupq_n_u32` intrinsic (#10)",
-  "wasmtime_hwwasm_version": "wasmtime 27.0.0 (78d809c6f 2024-11-29)"
-}
