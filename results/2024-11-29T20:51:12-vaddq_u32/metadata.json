@@ -1,9 +1,0 @@
-{
-  "name": "vaddq_u32",
-  "timestamp": "2024-11-29T20:51:12",
-  "hwwasm_git_version": "30c3a45b7097",
-  "wasmtime_baseline_version": "wasmtime 27.0.0",
-  "wasmtime_hwwasm_git_version": "30ad061d2aef",
-  "wasmtime_hwwasm_git_branch": "hwwasm",
-  "wasmtime_hwwasm_version": "wasmtime 27.0.0 (0ba331eea 2024-11-28)"
-}

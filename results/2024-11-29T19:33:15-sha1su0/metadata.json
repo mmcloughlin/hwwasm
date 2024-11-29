@@ -1,8 +1,0 @@
-{
-  "name": "sha1su0",
-  "timestamp": "2024-11-29T19:33:15",
-  "hwwasm_git_version": "607e242ff34d",
-  "wasmtime_baseline_version": "wasmtime 27.0.0",
-  "wasmtime_hwwasm_git_version": "6e842bbf9754",
-  "wasmtime_hwwasm_version": "wasmtime 27.0.0 (0ba331eea 2024-11-28)"
-}
