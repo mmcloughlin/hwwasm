@@ -8,6 +8,7 @@ function usage() {
     exit 2
 }
 
+name="wip"
 while getopts "n:" opt; do
     case "${opt}" in
         n) name="${OPTARG}" ;;
@@ -70,3 +71,6 @@ wasmtime run ./example/sha1/sha1_bench.wasm | tee "${output_directory}/wasmtime_
 json_set "${metadata_file}" "wasmtime_hwwasm_git_version" "$(git_version "${HWWASM_WASMTIME_DIR}")"
 json_set "${metadata_file}" "wasmtime_hwwasm_version" "$("${wasmtime_hwwasm}" --version)"
 "${wasmtime_hwwasm}" run ./example/sha1/sha1_bench.wasm | tee "${output_directory}/wasmtime_hwwasm.json"
+
+# Debugging: generate explore output.
+"${wasmtime_hwwasm}" explore example/sha1/sha1_test.wasm --output "${output_directory}/sha1_test.explore.html"
