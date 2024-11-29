@@ -7,7 +7,7 @@
 
 #define MESSAGE_BLOCKS (UINT64_C(1) << 6)
 #define MESSAGE_SIZE (MESSAGE_BLOCKS * SHA1_BLOCK_SIZE)
-#define ITERATIONS (UINT64_C(1) << 17)
+#define ITERATIONS (UINT64_C(1) << 18)
 #define TOTAL_BLOCKS (MESSAGE_BLOCKS * ITERATIONS)
 
 static uint64_t nanotime() {
