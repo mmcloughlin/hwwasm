@@ -40,12 +40,12 @@ int main() {
     printf("{\n");
 
     // Parameters.
-    printf("\t\"message_blocks\": %" PRIu64 ",\n", MESSAGE_BLOCKS);
-    printf("\t\"iterations\": %" PRIu64 ",\n", ITERATIONS);
-    printf("\t\"total_blocks\": %" PRIu64 ",\n", TOTAL_BLOCKS);
+    printf("  \"message_blocks\": %" PRIu64 ",\n", MESSAGE_BLOCKS);
+    printf("  \"iterations\": %" PRIu64 ",\n", ITERATIONS);
+    printf("  \"total_blocks\": %" PRIu64 ",\n", TOTAL_BLOCKS);
 
     // State: include for comparison and to prevent dead code elimination.
-    printf("\t\"final_state\":");
+    printf("  \"final_state\":");
     for (size_t i = 0; i < 5; i++) {
         char *sep = i == 0 ? " [" : ", ";
         printf("%s\"%08" PRIx32 "\"", sep, state[i]);
@@ -53,7 +53,7 @@ int main() {
     printf("],\n");
 
     // Timing.
-    printf("\t\"elapsed_ns\": %" PRIu64 "\n", elapsed_ns);
+    printf("  \"elapsed_ns\": %" PRIu64 "\n", elapsed_ns);
 
     printf("}\n");
 
