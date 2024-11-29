@@ -9,11 +9,13 @@ function usage() {
 }
 
 name="wip"
-wasmtime_hwwasm_ref="hwwasm"
-while getopts "n:v:" opt; do
+wasmtime_hwwasm_ref="HEAD"
+clean="true"
+while getopts "n:v:d" opt; do
     case "${opt}" in
         n) name="${OPTARG}" ;;
         v) wasmtime_hwwasm_ref="${OPTARG}" ;;
+        d) clean="false" ;;
         *) usage ;;
     esac
 done
@@ -51,7 +53,9 @@ make -C example/sha1 clean all
 (
     cd "${HWWASM_WASMTIME_DIR}"
     git checkout "${wasmtime_hwwasm_ref}"
-    cargo clean
+    if [[ "${clean}" == "true" ]]; then
+        cargo clean
+    fi
     cargo build --release --bin wasmtime
 )
 wasmtime_hwwasm="${HWWASM_WASMTIME_DIR}/target/release/wasmtime"
