@@ -37,9 +37,9 @@ function git_version() {
     git -C "${repo}" describe --always --dirty --abbr=12 --exclude '*'
 }
 
-function git_branch() {
+function git_commit_subject() {
     local repo="${1}"
-    git -C "${repo}" branch --show-current
+    git -C "${repo}" log -1 --pretty='%s'
 }
 
 # Build SHA-1 example.
@@ -75,7 +75,7 @@ wasmtime run ./example/sha1/sha1_bench.wasm | tee "${output_directory}/wasmtime_
 
 # Benchmark: wasmtime fork.
 json_set "${metadata_file}" "wasmtime_hwwasm_git_version" "$(git_version "${HWWASM_WASMTIME_DIR}")"
-json_set "${metadata_file}" "wasmtime_hwwasm_git_branch" "$(git_branch "${HWWASM_WASMTIME_DIR}")"
+json_set "${metadata_file}" "wasmtime_hwwasm_git_commit_subject" "$(git_commit_subject "${HWWASM_WASMTIME_DIR}")"
 json_set "${metadata_file}" "wasmtime_hwwasm_version" "$("${wasmtime_hwwasm}" --version)"
 "${wasmtime_hwwasm}" run ./example/sha1/sha1_bench.wasm | tee "${output_directory}/wasmtime_hwwasm.json"
 
