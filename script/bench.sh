@@ -49,7 +49,7 @@ make -C example/sha1 clean all
 (
     cd "${HWWASM_WASMTIME_DIR}"
     cargo clean
-    cargo build --release
+    cargo build --release --bin wasmtime
 )
 wasmtime_hwwasm="${HWWASM_WASMTIME_DIR}/target/release/wasmtime"
 
