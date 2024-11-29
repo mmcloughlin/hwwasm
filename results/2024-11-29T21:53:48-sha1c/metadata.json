@@ -1,0 +1,9 @@
+{
+  "name": "sha1c",
+  "timestamp": "2024-11-29T21:53:48",
+  "hwwasm_git_version": "7d39756f6998",
+  "wasmtime_baseline_version": "wasmtime 27.0.0",
+  "wasmtime_hwwasm_git_version": "0ba331eeafa1",
+  "wasmtime_hwwasm_git_commit_subject": "cranelift: intercept intrinsic call `vsha1cq_u32` (#4)",
+  "wasmtime_hwwasm_version": "wasmtime 27.0.0 (0ba331eea 2024-11-28)"
+}

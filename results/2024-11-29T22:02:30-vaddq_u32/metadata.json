@@ -1,0 +1,9 @@
+{
+  "name": "vaddq_u32",
+  "timestamp": "2024-11-29T22:02:30",
+  "hwwasm_git_version": "7d39756f6998",
+  "wasmtime_baseline_version": "wasmtime 27.0.0",
+  "wasmtime_hwwasm_git_version": "30ad061d2aef",
+  "wasmtime_hwwasm_git_commit_subject": "cranelift: `vaddq_u32` intrinsic (#9)",
+  "wasmtime_hwwasm_version": "wasmtime 27.0.0 (30ad061d2 2024-11-29)"
+}

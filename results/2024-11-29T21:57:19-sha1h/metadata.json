@@ -1,0 +1,9 @@
+{
+  "name": "sha1h",
+  "timestamp": "2024-11-29T21:57:19",
+  "hwwasm_git_version": "7d39756f6998",
+  "wasmtime_baseline_version": "wasmtime 27.0.0",
+  "wasmtime_hwwasm_git_version": "20ee379e7e52",
+  "wasmtime_hwwasm_git_commit_subject": "cranelift: `vsha1h_u32` intrinsic (#6)",
+  "wasmtime_hwwasm_version": "wasmtime 27.0.0 (20ee379e7 2024-11-29)"
+}
