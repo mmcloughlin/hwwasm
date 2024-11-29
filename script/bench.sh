@@ -9,9 +9,11 @@ function usage() {
 }
 
 name="wip"
-while getopts "n:" opt; do
+wasmtime_hwwasm_ref="hwwasm"
+while getopts "n:v:" opt; do
     case "${opt}" in
         n) name="${OPTARG}" ;;
+        v) wasmtime_hwwasm_ref="${OPTARG}" ;;
         *) usage ;;
     esac
 done
@@ -48,6 +50,7 @@ make -C example/sha1 clean all
 # Build wasmtime fork.
 (
     cd "${HWWASM_WASMTIME_DIR}"
+    git checkout "${wasmtime_hwwasm_ref}"
     cargo clean
     cargo build --release --bin wasmtime
 )
