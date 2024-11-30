@@ -80,8 +80,9 @@ def report(results):
         native_run = result.native_run()
         intrinsics_run = result.runs["wasmtime_hwwasm"]
         scale = intrinsics_run["elapsed_ns"] / native_run["elapsed_ns"]
-        commit_url = "https://github.com/mmcloughlin/hwwasmtime/commit/" + result.metadata["wasmtime_hwwasm_git_version"]
-        print(f"| {commit_url} | `{name}` | x{scale:.2f} |")
+        commit = result.metadata["wasmtime_hwwasm_git_version"]
+        commit_url = "https://github.com/mmcloughlin/hwwasmtime/commit/" + commit
+        print(f"| [`{commit}`]({commit_url}) | `{name}` | x{scale:.2f} |")
 
 
 def main():
