@@ -1,0 +1,9 @@
+{
+  "name": "vreinterpretq",
+  "timestamp": "2024-11-30T03:06:32",
+  "hwwasm_git_version": "a382daa11adc",
+  "wasmtime_baseline_version": "wasmtime 27.0.0",
+  "wasmtime_hwwasm_git_version": "eccbeffd155c",
+  "wasmtime_hwwasm_git_commit_subject": "cranelift: `vreinterpretq_{u32_u8,u8_u32}` intrinsics (#13)",
+  "wasmtime_hwwasm_version": "wasmtime 27.0.0 (eccbeffd1 2024-11-29)"
+}
