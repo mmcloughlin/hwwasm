@@ -9,3 +9,4 @@
 | [`779aa6937dc8`](https://github.com/mmcloughlin/hwwasmtime/commit/779aa6937dc8) | `vdupq_n_u32` | x2.71 |
 | [`7f5d2e9d5928`](https://github.com/mmcloughlin/hwwasmtime/commit/7f5d2e9d5928) | `vgetq_lane_u32` | x3.10 |
 | [`eccbeffd155c`](https://github.com/mmcloughlin/hwwasmtime/commit/eccbeffd155c) | `vreinterpretq` | x2.89 |
+| [`074ed2f481b8`](https://github.com/mmcloughlin/hwwasmtime/commit/074ed2f481b8) | `vrev32q_u8` | x3.15 |
