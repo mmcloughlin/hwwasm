@@ -4,20 +4,20 @@ static v128_t v128_zero() {
     return wasm_i8x16_splat(0);
 }
 
-uint32x4_t vaddq_u32(uint32x4_t a, uint32x4_t b) {
+uint32x4_t __intrinsic_vaddq_u32(uint32x4_t a, uint32x4_t b) {
     return wasm_i32x4_add(a, b);
 }
 
-uint32x4_t vdupq_n_u32(uint32_t value) {
+uint32x4_t __intrinsic_vdupq_n_u32(uint32_t value) {
     return wasm_u32x4_splat(value);
 }
 
-uint8x16_t vrev32q_u8(uint8x16_t vec) {
+uint8x16_t __intrinsic_vrev32q_u8(uint8x16_t vec) {
     return wasm_i8x16_shuffle(vec, v128_zero(), 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13,
                               12);
 }
 
-uint32_t vgetq_lane_u32(uint32x4_t v, const int lane) {
+uint32_t __intrinsic_vgetq_lane_u32(uint32x4_t v, const int lane) {
     switch (lane) {
         case 0:
             return wasm_u32x4_extract_lane(v, 0);
@@ -32,11 +32,11 @@ uint32_t vgetq_lane_u32(uint32x4_t v, const int lane) {
     }
 }
 
-uint32x4_t vreinterpretq_u32_u8(uint8x16_t a) {
+uint32x4_t __intrinsic_vreinterpretq_u32_u8(uint8x16_t a) {
     return a;
 }
 
-uint8x16_t vreinterpretq_u8_u32(uint32x4_t a) {
+uint8x16_t __intrinsic_vreinterpretq_u8_u32(uint32x4_t a) {
     return a;
 }
 
@@ -55,7 +55,7 @@ uint8x16_t vreinterpretq_u8_u32(uint32x4_t a) {
         a = t;                                                                              \
     } while (0)
 
-uint32x4_t vsha1cq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
+uint32x4_t __intrinsic_vsha1cq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
     uint32_t a = wasm_u32x4_extract_lane(hash_abcd, 0);
     uint32_t b = wasm_u32x4_extract_lane(hash_abcd, 1);
     uint32_t c = wasm_u32x4_extract_lane(hash_abcd, 2);
@@ -70,7 +70,7 @@ uint32x4_t vsha1cq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
     return wasm_u32x4_make(a, b, c, d);
 }
 
-uint32x4_t vsha1pq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
+uint32x4_t __intrinsic_vsha1pq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
     uint32_t a = wasm_u32x4_extract_lane(hash_abcd, 0);
     uint32_t b = wasm_u32x4_extract_lane(hash_abcd, 1);
     uint32_t c = wasm_u32x4_extract_lane(hash_abcd, 2);
@@ -85,7 +85,7 @@ uint32x4_t vsha1pq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
     return wasm_u32x4_make(a, b, c, d);
 }
 
-uint32x4_t vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
+uint32x4_t __intrinsic_vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
     uint32_t a = wasm_u32x4_extract_lane(hash_abcd, 0);
     uint32_t b = wasm_u32x4_extract_lane(hash_abcd, 1);
     uint32_t c = wasm_u32x4_extract_lane(hash_abcd, 2);
@@ -100,11 +100,11 @@ uint32x4_t vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
     return wasm_u32x4_make(a, b, c, d);
 }
 
-uint32_t vsha1h_u32(uint32_t hash_e) {
+uint32_t __intrinsic_vsha1h_u32(uint32_t hash_e) {
     return __builtin_rotateleft32(hash_e, 30);
 }
 
-uint32x4_t vsha1su0q_u32(uint32x4_t w0_3, uint32x4_t w4_7, uint32x4_t w8_11) {
+uint32x4_t __intrinsic_vsha1su0q_u32(uint32x4_t w0_3, uint32x4_t w4_7, uint32x4_t w8_11) {
     v128_t operand1 = w0_3;
     v128_t operand2 = w4_7;
     v128_t operand3 = w8_11;
@@ -119,7 +119,7 @@ uint32x4_t vsha1su0q_u32(uint32x4_t w0_3, uint32x4_t w4_7, uint32x4_t w8_11) {
     return result;
 }
 
-uint32x4_t vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15) {
+uint32x4_t __intrinsic_vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15) {
     v128_t operand1 = tw0_3;
     v128_t operand2 = w12_15;
     v128_t result;
@@ -145,10 +145,10 @@ uint32x4_t vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15) {
     return result;
 }
 
-uint32x4_t vld1q_u32(uint32_t const *ptr) {
+uint32x4_t __intrinsic_vld1q_u32(uint32_t const *ptr) {
     return wasm_v128_load(ptr);
 }
 
-void vst1q_u32(uint32_t *ptr, uint32x4_t val) {
+void __intrinsic_vst1q_u32(uint32_t *ptr, uint32x4_t val) {
     wasm_v128_store(ptr, val);
 }

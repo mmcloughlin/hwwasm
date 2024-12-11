@@ -37,8 +37,16 @@ def generate_c_header_declarations(intrinsics):
             continue
 
         params = ", ".join(intrinsic["arguments"])
+        args = ", ".join(arg.split()[-1] for arg in intrinsic["arguments"])
         ret = intrinsic["return_type"]["value"]
-        print(f"{ret} {intrinsic['name']}({params});")
+        name = intrinsic["name"]
+        builtin_name = f"__intrinsic_{name}"
+
+        print(f"// {name}")
+        print()
+        print(f"{ret} {builtin_name}({params});")
+        print()
+        print(f"static inline {ret} {name}({params}) {{ return {builtin_name}({args}); }}")
         print()
 
 
