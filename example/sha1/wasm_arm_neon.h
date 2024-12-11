@@ -9,9 +9,13 @@ uint32x4_t vaddq_u32(uint32x4_t a, uint32x4_t b);
 
 uint32x4_t vdupq_n_u32(uint32_t value);
 
-uint32x4_t vld1q_u32(uint32_t const *ptr);
+static inline uint32x4_t vld1q_u32(uint32_t const *ptr) {
+    return wasm_v128_load(ptr);
+}
 
-void vst1q_u32(uint32_t *ptr, uint32x4_t val);
+static inline void vst1q_u32(uint32_t *ptr, uint32x4_t val) {
+    wasm_v128_store(ptr, val);
+}
 
 uint8x16_t vrev32q_u8(uint8x16_t vec);
 
