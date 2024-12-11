@@ -4,20 +4,20 @@ CFLAGS=-Wall -Wextra -Werror -O3
 WASM_CC=$(WASI_SDK_PATH)/bin/clang
 WASM_CFLAGS=$(CFLAGS) -msimd128
 
-TEST_BINARY=sha1_test
-BENCH_BINARY=sha1_bench
-
 .PHONY: all
 all: \
-	$(TEST_BINARY) $(TEST_BINARY).wasm $(TEST_BINARY).wat \
-	$(BENCH_BINARY) $(BENCH_BINARY).wasm \
-	sha1.o sha1.o.wasm sha1.o.wat wasm_arm_neon.o.wasm wasm_arm_neon.o.wat
+	sha1_intrinsics_test sha1_intrinsics_bench sha1_generic_test sha1_generic_bench \
+	sha1_intrinsics.o sha1_intrinsics.o.wasm sha1_intrinsics.o.wat wasm_arm_neon.o.wasm wasm_arm_neon.o.wat
 
-$(TEST_BINARY) $(BENCH_BINARY): sha1.o
+sha1_intrinsics_test:   sha1_test.o   sha1_intrinsics.o
+sha1_intrinsics_bench: 	sha1_bench.o  sha1_intrinsics.o
+sha1_generic_test:      sha1_test.o   sha1_generic.o
+sha1_generic_bench:     sha1_bench.o  sha1_generic.o
 
-$(TEST_BINARY).wasm $(BENCH_BINARY).wasm: sha1.o.wasm wasm_arm_neon.o.wasm
+sha1_intrinsics_test sha1_intrinsics_bench sha1_generic_test sha1_generic_bench:
+	$(CC) $(CFLAGS) -o $@ $^
 
-%.wasm: %.c
+%.wasm: %.o.wasm
 	$(WASM_CC) $(WASM_CFLAGS) -o $@ $^
 
 %.o.wasm: %.c
