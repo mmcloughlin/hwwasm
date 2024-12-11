@@ -1,0 +1,9 @@
+{
+  "name": "mem-inline",
+  "timestamp": "2024-12-11T16:04:44",
+  "hwwasm_git_version": "d8d5cd1661e0",
+  "wasmtime_baseline_version": "wasmtime 27.0.0",
+  "wasmtime_hwwasm_git_version": "074ed2f481b8",
+  "wasmtime_hwwasm_git_commit_subject": "cranelift: `vrev32q_u8` intrinsic (#14)",
+  "wasmtime_hwwasm_version": "wasmtime 27.0.0 (074ed2f48 2024-11-29)"
+}
