@@ -6,6 +6,8 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{pifont}
+\usepackage{amssymb}
+\usepackage{amsmath}
 
 \usepackage{biblatex}
 \addbibresource{references.bib}
@@ -20,6 +22,9 @@
 
 \newcommand{\code}[1]{\texttt{#1}}
 
+\newcommand{\xor}{\oplus}
+\newcommand{\rotl}{\lll}
+
 \newcommand{\todo}[1]{{\ding{110}\ding{43}\textcolor{red}{TODO: #1}}\xspace}
 
 \begin{document}
@@ -29,9 +34,7 @@
 \maketitle
 
 \input{introduction}
-
-\section{Project Setup}
-\emph{TODO}
+\input{setup}
 
 \section{Intrinsics in \wasml}
 \emph{TODO}

@@ -1,0 +1,119 @@
+\section{Project Setup}
+
+The \citetitle{hw-spec-wasm} proposal has many aspects to it. For the purposes
+of project scoping, we selected a representative motivating example to evaluate
+whether hardware intrinsics in \wasm could work from a user-interface and engine
+perspective. Specifically, our target is the SHA-1 cryptographic algorithm
+implemented with AArch64 Cryptographic Extensions. Cryptographic acceleration is
+one of the primary motivating examples for hardware intrinsics, especially given
+the importance of fast correct cryptography in foundational networking
+applications. The dedicated SHA-1 instruction set in AArch64 also has a modest
+number of instructions, making it possible to develop a proof-of-concept for a
+realistic example without the need to support thousands of opcodes.
+
+It would be possible to demonstrate hardware intrinsics at the pure \wasm level,
+however this would yield a technically correct but underwhelming result. Our
+goal is to show the practicality of a potentially realistic use case.
+Therefore, we chose to target an implementation of SHA-1 in C using the
+\citetitle{acle}~\cite{acle}, which provides access to Cryptographic Extension
+instructions through the \code{arm\_neon.h} C header. The goal is an
+implementation of SHA-1 compiled against the ARM native intrinsics that could
+also work---with acceleration---when compiled and executed under a \wasm toolchain
+with intrinsics support.
+
+\subsection{SHA-1 Algorithm}
+
+The SHA-1 algorithm hashes an arbitrary-length message to a 160-bit hash value.
+The core of SHA-1 is a \emph{compression function} that combines an incoming
+160-bit state with a 512-bit message chunk to produce a new 160-bit state. The
+performance of SHA-1 boils down to the efficiency of the compression function
+implementation. The compression function operates on five 32-bit registers $A_i,
+B_i, C_i, D_i, E_i$ over 80 rounds, each of which consumes a 32-bit word $W_i$
+from the \emph{message schedule}. First, the message schedule is computed by
+initializing the first 16 words $W_0, \ldots, W_{15}$ to the 32-bit big-endian
+words of the input 512-bit message and then computing:
+%
+\begin{equation*}
+W_i = \left( W_{i-3} \xor W_{i-8} \xor W_{i-14} \xor W_{i-16} \right) \rotl 1,
+\end{equation*}
+%
+where $\xor$ is bitwise exclusive or and $\rotl$ is bitwise left-rotate.
+The round update function is:
+%
+\begin{align*}
+A_{i+1} &= \left( A_i \rotl 5 \right) + F_i(B_i, C_i, D_i) + E_i + K_i + W_i \\
+B_{i+1} &= A_i \\
+C_{i+1} &= B_i \rotl 30 \\
+D_{i+1} &= C_i \\
+E_{i+1} &= D_i,
+\end{align*}
+%
+where $F_i$ is a bitwise function that may be choose, parity or majority
+depending on the round, and $K_i$ are round-dependent constants.  The final
+state is obtained by adding final register values into the original input state.
+
+At a high-level, SHA-1 is a sequence of pure bitwise and arithmetic operations.
+It is simple to implement but inherently serial and difficult to vectorize a
+single computation (multiple parallel SHA-1 computations are trivially
+vectorizable). Therefore, it benefits substantially from custom hardware
+acceleration.
+
+\subsection{AArch64 SHA-1 Instructions}
+
+AArch64 Cryptographic Extensions offer a family of size intructions for SHA-1
+acceleration:
+%
+\begin{itemize}
+    \item \code{SHA1C Qd,Sn,Vm.4S}:
+        computes \emph{four} rounds of the SHA-1 compression function with
+        registers $A,B,C,D$ in a 128-bit vector register \code{Qd}, $E$ in the
+        low 32-bits of a vector register \code{Sn}, and inputs words $W_i$ in
+        \code{Vm}. The bitwise function is choose, from the \code{C} mnemonic.
+    \item \code{SHA1P Qd,Sn,Vm.4S}:
+        as \code{SHA1C} with parity bitwise function.
+    \item \code{SHA1M Qd,Sn,Vm.4S}:
+        as \code{SHA1C} with majority bitwise function.
+    \item \code{SHA1H Sd,Sn}:
+        computes the SHA-1 fixed rotate by 30 (applied to $B$) on the low
+        32-bits of a vector register `\code{Sn}'. Note that AArch64 has a
+        left-rotate instruction on the general-purpose register file, but the
+        \code{SHA1H} instruction avoids the expensive move between register
+        files.
+    \item \code{SHA1SU0 Vd.4S,Vn.4S,Vm.4S}:
+        computes part of the message schedule, called ``SHA1 schedule update
+        0''. Operates on three segments of message words in vector registers.
+    \item \code{SHA1SU1 Vd.4S,Vn.4S}:
+        completes the messages schedule, called called ``SHA1 schedule update
+        1''.
+\end{itemize}
+
+These instructions are available from C with the \code{arm\_neon.h}
+functions~\cite{arm-neon-sha}:
+%
+\snippet{c}{arm_neon_sha1.h}
+%
+These instructions are guaranteed by compiler toolchains to compile down to the
+corresponding assembly instructions.  Note that the C interface introduces
+subtle changes from the underlying intructions for usability reasons: for
+example, the \code{hash\_e} argument is a regular 32-bit unsigned type in C but
+belongs in a vector register.
+
+\subsection{Optimization Target}
+
+Our target for the purposes of the project is an implementation of SHA-1 in C
+using the intrinsics interface above. To give a feel for the implementation,
+four rounds of the compression function are:
+%
+\snippet{c}{sha1_intrinsics_rounds.c}
+%
+Note that since the specialist instructions deal with vector registers, we also
+have to use other utility intrinsic functions such as \code{vgetq\_lane\_u32}
+and \code{vdupq\_n\_u32}.
+%
+Alongside the intrinsics-optimized version we also have an implementation of
+SHA-1 using plain C for comparison.
+%
+For evaluation purposes we also have: a unit test against a SHA-1 test
+vector to ensure correctness, and a microbenchmark to evaluate performance.
+
+\todo{baseline numbers for native vs generic}

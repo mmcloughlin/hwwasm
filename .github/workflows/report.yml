@@ -18,7 +18,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Tools
-        run: sudo apt-get install -y texlive-latex-recommended latexmk biber
+        run: sudo apt-get install -y texlive-latex-extra latexmk biber
       - name: Build
         working-directory: report
         run: make
