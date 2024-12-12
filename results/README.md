@@ -12,3 +12,4 @@
 | [`074ed2f481b8`](https://github.com/mmcloughlin/hwwasmtime/commit/074ed2f481b8) | `vrev32q_u8` | x3.15 |
 | [`074ed2f481b8`](https://github.com/mmcloughlin/hwwasmtime/commit/074ed2f481b8) | `generic` | x3.01 |
 | [`f177fbdcead4`](https://github.com/mmcloughlin/hwwasmtime/commit/f177fbdcead4) | `argmap` | x2.48 |
+| [`f177fbdcead4`](https://github.com/mmcloughlin/hwwasmtime/commit/f177fbdcead4) | `inline` | x1.34 |
