@@ -55,12 +55,12 @@ uint8x16_t __intrinsic_vreinterpretq_u8_u32(uint32x4_t a) {
         a = t;                                                                              \
     } while (0)
 
-uint32x4_t __intrinsic_vsha1cq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
+uint32x4_t __intrinsic_vsha1cq_u32(uint32x4_t hash_abcd, uint32x4_t hash_e, uint32x4_t wk) {
     uint32_t a = wasm_u32x4_extract_lane(hash_abcd, 0);
     uint32_t b = wasm_u32x4_extract_lane(hash_abcd, 1);
     uint32_t c = wasm_u32x4_extract_lane(hash_abcd, 2);
     uint32_t d = wasm_u32x4_extract_lane(hash_abcd, 3);
-    uint32_t e = hash_e;
+    uint32_t e = wasm_u32x4_extract_lane(hash_e, 0);
 
     SHA1_ROUND(SHA1_CHOOSE, 0);
     SHA1_ROUND(SHA1_CHOOSE, 1);
@@ -70,12 +70,12 @@ uint32x4_t __intrinsic_vsha1cq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32
     return wasm_u32x4_make(a, b, c, d);
 }
 
-uint32x4_t __intrinsic_vsha1pq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
+uint32x4_t __intrinsic_vsha1pq_u32(uint32x4_t hash_abcd, uint32x4_t hash_e, uint32x4_t wk) {
     uint32_t a = wasm_u32x4_extract_lane(hash_abcd, 0);
     uint32_t b = wasm_u32x4_extract_lane(hash_abcd, 1);
     uint32_t c = wasm_u32x4_extract_lane(hash_abcd, 2);
     uint32_t d = wasm_u32x4_extract_lane(hash_abcd, 3);
-    uint32_t e = hash_e;
+    uint32_t e = wasm_u32x4_extract_lane(hash_e, 0);
 
     SHA1_ROUND(SHA1_PARITY, 0);
     SHA1_ROUND(SHA1_PARITY, 1);
@@ -85,12 +85,12 @@ uint32x4_t __intrinsic_vsha1pq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32
     return wasm_u32x4_make(a, b, c, d);
 }
 
-uint32x4_t __intrinsic_vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
+uint32x4_t __intrinsic_vsha1mq_u32(uint32x4_t hash_abcd, uint32x4_t hash_e, uint32x4_t wk) {
     uint32_t a = wasm_u32x4_extract_lane(hash_abcd, 0);
     uint32_t b = wasm_u32x4_extract_lane(hash_abcd, 1);
     uint32_t c = wasm_u32x4_extract_lane(hash_abcd, 2);
     uint32_t d = wasm_u32x4_extract_lane(hash_abcd, 3);
-    uint32_t e = hash_e;
+    uint32_t e = wasm_u32x4_extract_lane(hash_e, 0);
 
     SHA1_ROUND(SHA1_MAJORITY, 0);
     SHA1_ROUND(SHA1_MAJORITY, 1);

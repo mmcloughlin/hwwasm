@@ -71,26 +71,26 @@ static inline uint8x16_t vreinterpretq_u8_u32(uint32x4_t a) {
 
 // vsha1cq_u32
 
-uint32x4_t __intrinsic_vsha1cq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk);
+uint32x4_t __intrinsic_vsha1cq_u32(uint32x4_t hash_abcd, uint32x4_t hash_e, uint32x4_t wk);
 
 static inline uint32x4_t vsha1cq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
-    return __intrinsic_vsha1cq_u32(hash_abcd, hash_e, wk);
+    return __intrinsic_vsha1cq_u32(hash_abcd, wasm_u32x4_splat(hash_e), wk);
 }
 
 // vsha1pq_u32
 
-uint32x4_t __intrinsic_vsha1pq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk);
+uint32x4_t __intrinsic_vsha1pq_u32(uint32x4_t hash_abcd, uint32x4_t hash_e, uint32x4_t wk);
 
 static inline uint32x4_t vsha1pq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
-    return __intrinsic_vsha1pq_u32(hash_abcd, hash_e, wk);
+    return __intrinsic_vsha1pq_u32(hash_abcd, wasm_u32x4_splat(hash_e), wk);
 }
 
 // vsha1mq_u32
 
-uint32x4_t __intrinsic_vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk);
+uint32x4_t __intrinsic_vsha1mq_u32(uint32x4_t hash_abcd, uint32x4_t hash_e, uint32x4_t wk);
 
 static inline uint32x4_t vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32x4_t wk) {
-    return __intrinsic_vsha1mq_u32(hash_abcd, hash_e, wk);
+    return __intrinsic_vsha1mq_u32(hash_abcd, wasm_u32x4_splat(hash_e), wk);
 }
 
 // vsha1h_u32
