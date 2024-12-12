@@ -4,7 +4,6 @@ CFLAGS=-Wall -Wextra -Werror -O3
 WASM_CC=$(WASI_SDK_PATH)/bin/clang
 WASM_CFLAGS=$(CFLAGS) -msimd128
 
-ARCHS=native wasm
 TOOLS=test bench
 BACKENDS=intrinsics generic
 
