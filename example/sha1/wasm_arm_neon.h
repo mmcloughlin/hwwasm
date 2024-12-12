@@ -7,66 +7,62 @@ typedef v128_t uint32x4_t;
 
 // vaddq_u32
 
-uint32x4_t __intrinsic_vaddq_u32(uint32x4_t a, uint32x4_t b);
-
 static inline uint32x4_t vaddq_u32(uint32x4_t a, uint32x4_t b) {
-    return __intrinsic_vaddq_u32(a, b);
+    return wasm_i32x4_add(a, b);
 }
 
 // vdupq_n_u32
 
-uint32x4_t __intrinsic_vdupq_n_u32(uint32_t value);
-
 static inline uint32x4_t vdupq_n_u32(uint32_t value) {
-    return __intrinsic_vdupq_n_u32(value);
+    return wasm_u32x4_splat(value);
 }
 
 // vld1q_u32
 
-uint32x4_t __intrinsic_vld1q_u32(uint32_t const *ptr);
-
 static inline uint32x4_t vld1q_u32(uint32_t const *ptr) {
-    return __intrinsic_vld1q_u32(ptr);
+    return wasm_v128_load(ptr);
 }
 
 // vst1q_u32
 
-void __intrinsic_vst1q_u32(uint32_t *ptr, uint32x4_t val);
-
 static inline void vst1q_u32(uint32_t *ptr, uint32x4_t val) {
-    return __intrinsic_vst1q_u32(ptr, val);
+    wasm_v128_store(ptr, val);
 }
 
 // vrev32q_u8
 
-uint8x16_t __intrinsic_vrev32q_u8(uint8x16_t vec);
-
 static inline uint8x16_t vrev32q_u8(uint8x16_t vec) {
-    return __intrinsic_vrev32q_u8(vec);
+    return wasm_i8x16_shuffle(vec, wasm_i8x16_splat(0), 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15,
+                              14, 13, 12);
 }
 
 // vgetq_lane_u32
 
-uint32_t __intrinsic_vgetq_lane_u32(uint32x4_t v, const int lane);
-
 static inline uint32_t vgetq_lane_u32(uint32x4_t v, const int lane) {
-    return __intrinsic_vgetq_lane_u32(v, lane);
+    switch (lane) {
+        case 0:
+            return wasm_u32x4_extract_lane(v, 0);
+        case 1:
+            return wasm_u32x4_extract_lane(v, 1);
+        case 2:
+            return wasm_u32x4_extract_lane(v, 2);
+        case 3:
+            return wasm_u32x4_extract_lane(v, 3);
+        default:
+            __builtin_unreachable();
+    }
 }
 
 // vreinterpretq_u32_u8
 
-uint32x4_t __intrinsic_vreinterpretq_u32_u8(uint8x16_t a);
-
 static inline uint32x4_t vreinterpretq_u32_u8(uint8x16_t a) {
-    return __intrinsic_vreinterpretq_u32_u8(a);
+    return a;
 }
 
 // vreinterpretq_u8_u32
 
-uint8x16_t __intrinsic_vreinterpretq_u8_u32(uint32x4_t a);
-
 static inline uint8x16_t vreinterpretq_u8_u32(uint32x4_t a) {
-    return __intrinsic_vreinterpretq_u8_u32(a);
+    return a;
 }
 
 // vsha1cq_u32
