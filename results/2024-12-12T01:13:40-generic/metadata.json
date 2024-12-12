@@ -1,0 +1,9 @@
+{
+  "name": "generic",
+  "timestamp": "2024-12-12T01:13:40",
+  "hwwasm_git_version": "7da1e7e99666",
+  "wasmtime_baseline_version": "wasmtime 27.0.0",
+  "wasmtime_hwwasm_git_version": "074ed2f481b8",
+  "wasmtime_hwwasm_git_commit_subject": "cranelift: `vrev32q_u8` intrinsic (#14)",
+  "wasmtime_hwwasm_version": "wasmtime 27.0.0 (074ed2f48 2024-11-29)"
+}
