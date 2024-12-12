@@ -1,14 +1,5 @@
 #include "wasm_arm_neon.h"
 
-static v128_t v128_zero() {
-    return wasm_i8x16_splat(0);
-}
-
-uint8x16_t __intrinsic_vrev32q_u8(uint8x16_t vec) {
-    return wasm_i8x16_shuffle(vec, v128_zero(), 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13,
-                              12);
-}
-
 #define SHA1_CHOOSE(X, Y, Z) (((Y ^ Z) & X) ^ Z)
 #define SHA1_PARITY(X, Y, Z) (X ^ Y ^ Z)
 #define SHA1_MAJORITY(X, Y, Z) ((X & Y) | ((X | Y) & Z))
@@ -94,7 +85,7 @@ uint32x4_t __intrinsic_vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15) {
     v128_t result;
 
     // bits(128) T = operand1 EOR LSR(operand2, 32);
-    v128_t T = operand1 ^ wasm_i32x4_shuffle(operand2, v128_zero(), 1, 2, 3, 4);
+    v128_t T = operand1 ^ wasm_i32x4_shuffle(operand2, wasm_i8x16_splat(0), 1, 2, 3, 4);
 
     uint32_t T0 = wasm_u32x4_extract_lane(T, 0);
     uint32_t T1 = wasm_u32x4_extract_lane(T, 1);

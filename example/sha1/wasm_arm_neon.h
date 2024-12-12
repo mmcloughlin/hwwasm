@@ -31,10 +31,9 @@ static inline void vst1q_u32(uint32_t *ptr, uint32x4_t val) {
 
 // vrev32q_u8
 
-uint8x16_t __intrinsic_vrev32q_u8(uint8x16_t vec);
-
 static inline uint8x16_t vrev32q_u8(uint8x16_t vec) {
-    return __intrinsic_vrev32q_u8(vec);
+    return wasm_i8x16_shuffle(vec, wasm_i8x16_splat(0), 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15,
+                              14, 13, 12);
 }
 
 // vgetq_lane_u32
