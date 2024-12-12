@@ -49,6 +49,15 @@ function git_commit_subject() {
 # Build SHA-1 example.
 make -C example/sha1 clean all
 
+# Ensure tests pass.
+for test in example/sha1/sha1_*_test; do
+    "${test}"
+done
+
+for test in example/sha1/sha1_*_test.wasm; do
+    wasmtime run "${test}"
+done
+
 # Build wasmtime fork.
 (
     cd "${HWWASM_WASMTIME_DIR}"
@@ -74,17 +83,19 @@ hwwasm_git_version=$(git_version ".")
 json_set "${metadata_file}" "hwwasm_git_version" "${hwwasm_git_version}"
 
 # Benchmark: native.
-./example/sha1/sha1_bench | tee "${output_directory}/native.json"
+./example/sha1/sha1_intrinsics_bench | tee "${output_directory}/native.json"
+./example/sha1/sha1_generic_bench | tee "${output_directory}/native_generic.json"
 
 # Benchmark: wasmtime baseline.
 json_set "${metadata_file}" "wasmtime_baseline_version" "$(wasmtime --version)"
-wasmtime run ./example/sha1/sha1_bench.wasm | tee "${output_directory}/wasmtime_baseline.json"
+wasmtime run ./example/sha1/sha1_intrinsics_bench.wasm | tee "${output_directory}/wasmtime_baseline.json"
+wasmtime run ./example/sha1/sha1_generic_bench.wasm | tee "${output_directory}/wasmtime_baseline_generic.json"
 
 # Benchmark: wasmtime fork.
 json_set "${metadata_file}" "wasmtime_hwwasm_git_version" "$(git_version "${HWWASM_WASMTIME_DIR}")"
 json_set "${metadata_file}" "wasmtime_hwwasm_git_commit_subject" "$(git_commit_subject "${HWWASM_WASMTIME_DIR}")"
 json_set "${metadata_file}" "wasmtime_hwwasm_version" "$("${wasmtime_hwwasm}" --version)"
-"${wasmtime_hwwasm}" run ./example/sha1/sha1_bench.wasm | tee "${output_directory}/wasmtime_hwwasm.json"
+"${wasmtime_hwwasm}" run ./example/sha1/sha1_intrinsics_bench.wasm | tee "${output_directory}/wasmtime_hwwasm.json"
 
 # Debugging: generate explore output.
-"${wasmtime_hwwasm}" explore example/sha1/sha1_test.wasm --output "${output_directory}/sha1_test.explore.html"
+"${wasmtime_hwwasm}" explore example/sha1/sha1_intrinsics_test.wasm --output "${output_directory}/sha1_test.explore.html"

@@ -4,18 +4,26 @@ CFLAGS=-Wall -Wextra -Werror -O3
 WASM_CC=$(WASI_SDK_PATH)/bin/clang
 WASM_CFLAGS=$(CFLAGS) -msimd128
 
+ARCHS=native wasm
+TOOLS=test bench
+BACKENDS=intrinsics generic
+
 .PHONY: all
-all: \
-	sha1_intrinsics_test sha1_intrinsics_bench sha1_generic_test sha1_generic_bench \
-	sha1_intrinsics.o sha1_intrinsics.o.wasm sha1_intrinsics.o.wat wasm_arm_neon.o.wasm wasm_arm_neon.o.wat
+all: sha1_intrinsics.o.wat sha1_generic.o.wat wasm_arm_neon.o.wat
 
-sha1_intrinsics_test:   sha1_test.o   sha1_intrinsics.o
-sha1_intrinsics_bench: 	sha1_bench.o  sha1_intrinsics.o
-sha1_generic_test:      sha1_test.o   sha1_generic.o
-sha1_generic_bench:     sha1_bench.o  sha1_generic.o
+define binary_template
+all: sha1_$(1)_$(2) sha1_$(1)_$(2).wasm
+sha1_$(1)_$(2): sha1_$(1).o sha1_$(2).o
+	$$(CC) $$(CFLAGS) -o $$@ $$^
+sha1_$(1)_$(2).wasm: sha1_$(1).o.wasm sha1_$(2).o.wasm wasm_arm_neon.o.wasm
+	$$(WASM_CC) $$(WASM_CFLAGS) -o $$@ $$^
+endef
 
-sha1_intrinsics_test sha1_intrinsics_bench sha1_generic_test sha1_generic_bench:
-	$(CC) $(CFLAGS) -o $@ $^
+$(foreach backend,$(BACKENDS),\
+	$(foreach tool,$(TOOLS),\
+		$(eval $(call binary_template,$(backend),$(tool)))\
+	)\
+)
 
 %.wasm: %.o.wasm
 	$(WASM_CC) $(WASM_CFLAGS) -o $@ $^
@@ -32,4 +40,4 @@ format:
 
 .PHONY: clean
 clean:
-	$(RM) $(TEST_BINARY) $(BENCH_BINARY) *.o *.wasm *.wat
+	$(RM) sha1_*_test sha1_*_bench *.o *.wasm *.wat

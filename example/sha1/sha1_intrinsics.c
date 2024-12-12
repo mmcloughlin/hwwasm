@@ -3,9 +3,8 @@
 // Adapted from the public domain implementation:
 //  https://github.com/noloader/SHA-Intrinsics/blob/4899efc81d1af159c1fd955936c673139f35aea9/sha1-arm.c
 
-#include "sha1.h"
-
 #include "intrinsics.h"
+#include "sha1.h"
 
 // Round constants
 #define K0 0x5a827999

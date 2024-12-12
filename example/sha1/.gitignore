@@ -1,5 +1,5 @@
-sha1_test
-sha1_bench
+sha1_*_test
+sha1_*_bench
 
 # C
 *.o
