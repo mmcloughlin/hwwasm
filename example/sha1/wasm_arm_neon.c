@@ -4,40 +4,9 @@ static v128_t v128_zero() {
     return wasm_i8x16_splat(0);
 }
 
-uint32x4_t __intrinsic_vaddq_u32(uint32x4_t a, uint32x4_t b) {
-    return wasm_i32x4_add(a, b);
-}
-
-uint32x4_t __intrinsic_vdupq_n_u32(uint32_t value) {
-    return wasm_u32x4_splat(value);
-}
-
 uint8x16_t __intrinsic_vrev32q_u8(uint8x16_t vec) {
     return wasm_i8x16_shuffle(vec, v128_zero(), 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13,
                               12);
-}
-
-uint32_t __intrinsic_vgetq_lane_u32(uint32x4_t v, const int lane) {
-    switch (lane) {
-        case 0:
-            return wasm_u32x4_extract_lane(v, 0);
-        case 1:
-            return wasm_u32x4_extract_lane(v, 1);
-        case 2:
-            return wasm_u32x4_extract_lane(v, 2);
-        case 3:
-            return wasm_u32x4_extract_lane(v, 3);
-        default:
-            __builtin_unreachable();
-    }
-}
-
-uint32x4_t __intrinsic_vreinterpretq_u32_u8(uint8x16_t a) {
-    return a;
-}
-
-uint8x16_t __intrinsic_vreinterpretq_u8_u32(uint32x4_t a) {
-    return a;
 }
 
 #define SHA1_CHOOSE(X, Y, Z) (((Y ^ Z) & X) ^ Z)
@@ -143,12 +112,4 @@ uint32x4_t __intrinsic_vsha1su1q_u32(uint32x4_t tw0_3, uint32x4_t w12_15) {
         __builtin_rotateleft32(T3, 1) ^ __builtin_rotateleft32(T0, 2));
 
     return result;
-}
-
-uint32x4_t __intrinsic_vld1q_u32(uint32_t const *ptr) {
-    return wasm_v128_load(ptr);
-}
-
-void __intrinsic_vst1q_u32(uint32_t *ptr, uint32x4_t val) {
-    wasm_v128_store(ptr, val);
 }
