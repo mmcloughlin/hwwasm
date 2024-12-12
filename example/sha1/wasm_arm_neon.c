@@ -100,8 +100,8 @@ uint32x4_t __intrinsic_vsha1mq_u32(uint32x4_t hash_abcd, uint32_t hash_e, uint32
     return wasm_u32x4_make(a, b, c, d);
 }
 
-uint32_t __intrinsic_vsha1h_u32(uint32_t hash_e) {
-    return __builtin_rotateleft32(hash_e, 30);
+uint32x4_t __intrinsic_vsha1h_u32(uint32x4_t hash_e) {
+    return wasm_u32x4_splat(__builtin_rotateleft32(wasm_u32x4_extract_lane(hash_e, 0), 30));
 }
 
 uint32x4_t __intrinsic_vsha1su0q_u32(uint32x4_t w0_3, uint32x4_t w4_7, uint32x4_t w8_11) {
