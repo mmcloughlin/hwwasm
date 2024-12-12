@@ -1,0 +1,9 @@
+{
+  "name": "argmap",
+  "timestamp": "2024-12-12T05:11:25",
+  "hwwasm_git_version": "7f4275f3e58a",
+  "wasmtime_baseline_version": "wasmtime 27.0.0",
+  "wasmtime_hwwasm_git_version": "f177fbdcead4",
+  "wasmtime_hwwasm_git_commit_subject": "cranelift: handle lower-level intrinsics API (#15)",
+  "wasmtime_hwwasm_version": "wasmtime 27.0.0 (f177fbdce 2024-12-12)"
+}
