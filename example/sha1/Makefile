@@ -4,20 +4,27 @@ CFLAGS=-Wall -Wextra -Werror -O3
 WASM_CC=$(WASI_SDK_PATH)/bin/clang
 WASM_CFLAGS=$(CFLAGS) -msimd128
 
-TEST_BINARY=sha1_test
-BENCH_BINARY=sha1_bench
+TOOLS=test bench
+BACKENDS=intrinsics generic
 
 .PHONY: all
-all: \
-	$(TEST_BINARY) $(TEST_BINARY).wasm $(TEST_BINARY).wat \
-	$(BENCH_BINARY) $(BENCH_BINARY).wasm \
-	sha1.o sha1.o.wasm sha1.o.wat wasm_arm_neon.o.wasm wasm_arm_neon.o.wat
+all: sha1_intrinsics.o.wat sha1_generic.o.wat wasm_arm_neon.o.wat
 
-$(TEST_BINARY) $(BENCH_BINARY): sha1.o
+define binary_template
+all: sha1_$(1)_$(2) sha1_$(1)_$(2).wasm
+sha1_$(1)_$(2): sha1_$(1).o sha1_$(2).o
+	$$(CC) $$(CFLAGS) -o $$@ $$^
+sha1_$(1)_$(2).wasm: sha1_$(1).o.wasm sha1_$(2).o.wasm wasm_arm_neon.o.wasm
+	$$(WASM_CC) $$(WASM_CFLAGS) -o $$@ $$^
+endef
 
-$(TEST_BINARY).wasm $(BENCH_BINARY).wasm: sha1.o.wasm wasm_arm_neon.o.wasm
+$(foreach backend,$(BACKENDS),\
+	$(foreach tool,$(TOOLS),\
+		$(eval $(call binary_template,$(backend),$(tool)))\
+	)\
+)
 
-%.wasm: %.c
+%.wasm: %.o.wasm
 	$(WASM_CC) $(WASM_CFLAGS) -o $@ $^
 
 %.o.wasm: %.c
@@ -32,4 +39,4 @@ format:
 
 .PHONY: clean
 clean:
-	$(RM) $(TEST_BINARY) $(BENCH_BINARY) *.o *.wasm *.wat
+	$(RM) sha1_*_test sha1_*_bench *.o *.wasm *.wat
