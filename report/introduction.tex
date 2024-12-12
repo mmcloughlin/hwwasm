@@ -1,0 +1,65 @@
+\section{Introduction}
+
+% Background
+
+\wasm is designed for hardware-independence and execution with ``near native
+code performance, taking advantage of capabilities common to all contemporary
+hardware''~\cite{wasm-spec-core}. This goal has been achievable for \emph{core}
+\wasm built upon now decades-old instruction sets. However, in the post Moore's
+Law era we have seen increasing specialization in CPU and instruction set design
+to achieve performance gains. Modern instruction sets include advanced vector
+extensions and domain-specific instructions, for example for cryptographic and
+machine-learning applications. As \wasm's adoption grows there is demand to
+expand the ``near native'' performance goal into domains that require these
+dedicated instruction sets.  At the same time, we would like to do so without
+sacraficing \wasm's hardware- and platform-independence.
+
+% Problem
+
+One approach to domain-specific acceleration in \wasm is standards evolution.
+\wasm is not static: the community group is active and the proposals
+process~\cite{wasm-proposals} allows for principled extensions of the standard.
+For example, \wasm 2.0 added 128-bit SIMD instructions~\cite{wasm-simd} and
+later proposals allowed for faster performance~\cite{wasm-relaxed-simd}.
+However, it is often difficult or impossible to design abstraction layers that
+allow high-performance on multiple target platforms. Even where possible, the
+standardization process is slow and deliberative by design, so \wasm users would
+have to wait a long time to benefit from the latest instruction-set extensions.
+Finally, instruction set extensions have now driven ISAs to include literally
+thousands of instructions, and it is unclear that the \wasm standard should ever
+grow to a similar scale. Therefore, while standards evolution is the right
+approach for longer-term adoption, it would also be desirable to have a
+\emph{\wasml extension mechanism} that can provide direct access to modern
+instruction sets on a shorter timescale.
+
+% Proposal
+
+The \citetitle{hw-spec-wasm} proposal~\cite{hw-spec-wasm} suggests an extension
+mechanism for \wasm to support execution of dedicated hardware instructions and
+optimized library kernels. Under the proposal, accelerated functionality would
+be accessed via functions tagged with a custom \code{@builtin} attribute. For
+example: \todo{better example builtin function}
+%
+\snippet{wat}{builtin.wat}
+%
+The intention is that the attribute signals to supporting engines that the
+function should be treated as an \emph{intrinsic}; that is, compiled down to a
+specific machine instruction or library kernel on supporting plaforms.
+Meanwhile, the function body exists to preserve the hardware-independence of
+\wasm. The so-called \emph{fallback function} can always be executed as a plain
+\wasm function on any platform. The proposal also discusses other aspects of the
+problem: mappings of machine-specific types to \wasm equivalents, checking for
+the accelerated builtin availability, versioning, and sharing the mappings of
+built-ins to machine instructions in a templates database.
+
+% Project
+
+In this project we explore the practicality of this proposal as an approach to
+hardware-specialization in \wasm. We do so by showing a proof-of-concept for a
+selected representative use case, namely the SHA-1 cryptographic algorithm using
+the Cryptographic Extension on AArch64. We successfully demonstrate that C code
+written against ARM's C intrinsics API can be executed both natively and via
+\wasm. We achieve \wasm execution by providing a Wasm AArch64 intrinsics C API
+layer, together with a fork of the Wasmtime \wasm runtime that supports
+intrinsic calls for a select group of AArch64 instructions. The end result is
+SHA-1 execution performance at only 1.3x native.

@@ -12,3 +12,4 @@
 *.nav
 *.snm
 *.synctex.gz
+_minted-*/

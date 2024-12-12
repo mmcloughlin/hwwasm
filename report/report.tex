@@ -1,22 +1,39 @@
 \documentclass{article}
 
+\usepackage{xcolor}
 \usepackage{xspace}
+\usepackage{acronym}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{pifont}
 
-\newcommand{\wasm}{WebAssembly\xspace}
+\usepackage{biblatex}
+\addbibresource{references.bib}
+
+\usepackage{minted}
+\setminted{fontsize=\small,autogobble,breaklines,xleftmargin=20pt,linenos}
+\newcommand{\snippet}[2]{\inputminted{#1}{snippets/#2}}
+
+\newacro{wasm}[Wasm]{WebAssembly}
+\newcommand{\wasml}{\acl{wasm}\xspace}
+\newcommand{\wasm}{\ac{wasm}\xspace}
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+\newcommand{\todo}[1]{{\ding{110}\ding{43}\textcolor{red}{TODO: #1}}\xspace}
 
 \begin{document}
 
-\title{Hardware Intrinsics in \wasm}
+\title{Hardware Intrinsics in \wasml}
 \author{Michael McLoughlin \\ \texttt{mcloughlin@cmu.edu}}
 \maketitle
 
-\section{Introduction}
-\emph{TODO}
+\input{introduction}
 
 \section{Project Setup}
 \emph{TODO}
 
-\section{Intrinsics in \wasm}
+\section{Intrinsics in \wasml}
 \emph{TODO}
 
 \section{Engine Integration}
@@ -31,9 +48,14 @@
 \section{Further Work}
 \emph{TODO}
 
+\section*{Acknowledgements}
+\emph{TODO}
+
 \appendix
 
 \section{Artifacts}
 \emph{TODO}
+
+\printbibliography
 
 \end{document}
