@@ -90,8 +90,8 @@ def markdown(results):
 def latex_safe_name(name):
     # Replace numbers.
     NUMBERS = [
-        ("0", "Zero"),
-        ("1", "One"),
+        ("0", "zero"),
+        ("1", "one"),
     ]
     for (digit, word) in NUMBERS:
         name = name.replace(digit, word)
@@ -114,47 +114,44 @@ def latex_metrics(results):
                 print(f"\\newcommand{{\\{command_name}}}{{{scale:.1f}x\\xspace}}")
 
 
-def format_intrinsics_list(intrinsics):
-    code_names = ["\\code{{{name}}}".format(name=name.replace("_", "\\_")) for name in intrinsics]
-    return ", ".join(code_names)
-
-
-def latex_iteration_table(results):
-    NAME_TO_INSTRINSICS = {
-        "sha1c": ["vsha1cq_u32"],
-        "sha1pm": ["vsha1pq_u32", "vsha1mq_u32"],
-        "sha1h": ["vsha1h_u32"],
-        "sha1su0": ["vsha1su0q_u32"],
-        "sha1su1": ["vsha1su1q_u32"],
-        "vaddq_u32": ["vaddq_u32"],
-        "vdupq_n_u32": ["vdupq_n_u32"],
-        "vgetq_lane_u32": ["vgetq_lane_u32"],
-        "vreinterpretq": ["vreinterpretq_u32_u8", "vreinterpretq_u8_u32"],
-        "vrev32q_u8": ["vrev32q_u8"],
-    }
+def latex_changes_table(results, *, start, end):
     print("\\begin{tabular}{cl}")
     print("\\toprule")
-    print("vs. Native & Added Intrinsics (including all above)\\\\")
+    print("vs. Native & Change (including prior)\\\\")
     print("\\midrule")
+    output = False
     for result in results:
         name = result.name
-        if name not in NAME_TO_INSTRINSICS:
+        if name == start:
+            output = True
+        if not output:
             continue
         native_run = result.native_run()
         intrinsics_run = result.runs["wasmtime_hwwasm"]
         scale = intrinsics_run["elapsed_ns"] / native_run["elapsed_ns"]
         #commit = result.metadata["wasmtime_hwwasm_git_version"]
         #commit_url = "https://github.com/mmcloughlin/hwwasmtime/commit/" + commit
-        intrinsics = format_intrinsics_list(NAME_TO_INSTRINSICS[name])
-        print(f"{scale:.1f}x & {intrinsics} \\\\")
+        change_macro = latex_safe_name(f"change{name}")
+        print(f"{scale:.1f}x & \\{change_macro} \\\\")
+        if name == end:
+            break
     print("\\bottomrule")
     print("\\end{tabular}")
+
+
+def latex_intrinsics_table(results):
+    latex_changes_table(results, start="sha1c", end="vrev32q_u8")
+
+
+def latex_refined_table(results):
+    latex_changes_table(results, start="argmap", end="inline")
 
 
 COMMANDS = {
     "markdown": markdown,
     "latex_metrics": latex_metrics,
-    "latex_iteration_table": latex_iteration_table,
+    "latex_intrinsics_table": latex_intrinsics_table,
+    "latex_refined_table": latex_refined_table,
 }
 
 def main():

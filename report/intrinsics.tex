@@ -49,6 +49,7 @@ the native executable.
 \todo{compare to the generic implementation compiled to wasm}
 
 \subsection{Engine Integration}
+\label{sec:engine}
 
 The real benefits of hardware intrinsics come from JIT support in the \wasm
 engine. For this project we chose to work with Wasmtime~\cite{wasmtime}, a
@@ -126,8 +127,19 @@ the mismatch.
 Performance of the SHA-1 benchmark compared to native improved rapidly as each
 intrinsic was implemented in the runtime, as the following table shows.
 
+\newcommand{\changeshaonec}{Intrinsic: \code{vsha1cq\_u32}}
+\newcommand{\changeshaonepm}{Intrinsics: \code{vsha1\{p,m\}q\_u32}}
+\newcommand{\changeshaoneh}{Intrinsic: \code{vsha1h\_u32}}
+\newcommand{\changeshaonesuzero}{Intrinsic: \code{vsha1su0q\_u32}}
+\newcommand{\changeshaonesuone}{Intrinsic: \code{vsha1su1q\_u32}}
+\newcommand{\changevaddqu}{Intrinsic: \code{vaddq\_u32}}
+\newcommand{\changevdupqnu}{Intrinsic: \code{vdupq\_n\_u32}}
+\newcommand{\changevgetqlaneu}{Intrinsic: \code{vgetq\_lane\_u32}}
+\newcommand{\changevreinterpretq}{Intrinsics: \code{vreinterpretq\_\{u32\_u8,u8\_u32\}}}
+\newcommand{\changevrevqu}{Intrinsic: \code{vrev32q\_u8}}
+
 \begin{center}
-\input{itertable.gen}
+\input{intrinsicstable.gen}
 \end{center}
 
 However, despite implementing almost all intrinsics (excluding load/store
@@ -179,7 +191,9 @@ performance gains by doing more at the \code{wasm\_arm\_neon} layer. Firstly, by
 bridging the the C intrinsic API to a different engine intrinsic API, and
 secondly inlining intrinsic functions that have direct \wasm equivalents.
 
-\paragraph{Bridging to Engine Intrinsics API}
+\newcommand{\changeargmap}{Bridging to Engine Intrinsics API}
+\paragraph{\changeargmap}
+
 The redundant moves problem stems from a semantics mismatch between the C API
 and the corresponding instruction.  For example, \code{vsha1h\_u32} takes a
 \code{uint32\_t hash\_e} argument but should compile to \code{SHA1H Sd,Sn},
@@ -203,5 +217,44 @@ inlined \wasm operators in the C source code (\code{i32x4.splat} and
 \code{i32x4.extract\_lane}). Clang is more likely to be able to optimize away
 these moves as an AOT compiler than a JIT compiler would be.
 
-\paragraph{Inlining Pure \wasm Intrinsics}
-\emph{TODO}
+\newcommand{\changeinline}{Inlining Pure \wasm Intrinsics}
+\paragraph{\changeinline}
+
+We noted in \secref{engine} that some instructions are implemented as
+passthrough to machine instructions, but others can be translated to CLIF
+instructions instead. For example, \code{vaddq\_u32} can be translated to a CLIF
+\code{iadd} on the \code{I32x4} vector type.  We could even translate it at a
+layer before by implementing it with \wasm \code{i32x4.add}. If a C instrinsic
+can be implemented efficiently with pure \wasm operators, we could handle it
+entirely in the C layer, obviating any need to process the intrinsic in the engine.
+
+Therefore, the next change was to implement intrinsics as \code{inline} calls in
+the header where possible:
+%
+\snippet{c}{vaddq_u32.h}
+
+Again, this has the benefit of improving the results from the AOT compilation
+since it sees more pure \wasm operators rather than opaque intrinsic calls.
+Intrinsic calls are limited to the cases that need them.
+
+\paragraph{Performance Gains from Refined Interface}
+
+The combination of these changes brought massive improvements, bringing us to
+\MetricInlineWasmtimeHwwasmDivNative of native performance.
+
+\begin{center}
+\input{refinedtable.gen}
+\end{center}
+
+We believe the reasons for these improvements are:
+%
+\begin{itemize}
+    \item \emph{Improved AOT Compilation.}
+        Inlined pure \wasm implementations offer more optimization opportunities
+        at the C compiler level.  In addition, the shims between general purpose
+        and vector types are more likely to be elided by an AOT compiler with a
+        full suite of optimization passes.
+    \item \emph{Fidelity of Engine Intrinsics APIs.}
+        With an extra translation layer, the instrinsics handled by the engine
+        have a closer semantic match to the target hardware instruction.
+\end{itemize}
