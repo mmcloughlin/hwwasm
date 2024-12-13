@@ -139,6 +139,39 @@ def latex_changes_table(results, *, start, end):
     print("\\end{tabular}")
 
 
+def latex_results_table(results):
+    INTRINSICS = "Intrinsics"
+    GENERIC = "Plain C"
+    INTRINSICS_FALLBACKS = "Intrinsics (Fallbacks)"
+
+    WASMTIME_BASELINE = "Wasmtime Baseline"
+    NATIVE = "Native"
+    WASMTIME_HWWASM = "Wasmtime \\emph{with Intrinsics}"
+
+    RUN_CATEGORIES = {
+        "wasmtime_baseline": (INTRINSICS_FALLBACKS, WASMTIME_BASELINE),
+        "native_generic": (GENERIC, NATIVE),
+        "native": (INTRINSICS, NATIVE),
+        "wasmtime_baseline_generic": (GENERIC, WASMTIME_BASELINE),
+        "wasmtime_hwwasm": (INTRINSICS, WASMTIME_HWWASM),
+    }
+
+    final = results[-1]
+    native_run = final.native_run()
+    runs = sorted(final.runs.items(), key=lambda r: r[1]["elapsed_ns"])
+
+    print("\\begin{tabular}{lll}")
+    print("\\toprule")
+    print("Implementation & Execution & vs. Native Intrinsics \\\\")
+    print("\\midrule")
+    for name, run in runs:
+        impl, executor = RUN_CATEGORIES[name]
+        scale = run["elapsed_ns"] / native_run["elapsed_ns"]
+        print(f"{impl} & {executor} & {scale:.1f}x \\\\")
+    print("\\bottomrule")
+    print("\\end{tabular}")
+
+
 def latex_intrinsics_table(results):
     latex_changes_table(results, start="sha1c", end="vrev32q_u8")
 
@@ -152,6 +185,7 @@ COMMANDS = {
     "latex_metrics": latex_metrics,
     "latex_intrinsics_table": latex_intrinsics_table,
     "latex_refined_table": latex_refined_table,
+    "latex_results_table": latex_results_table,
 }
 
 def main():

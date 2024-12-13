@@ -1,0 +1,28 @@
+\section{Results}
+\label{sec:results}
+
+The previous section on implementation (\secref{intrinsics}) presented the
+results of different strategies. The table below shows the end result compared
+to alternative SHA-1 implementations and execution strategies.
+
+\begin{center}
+\input{resultstable.gen}
+\end{center}
+
+Intrinsics fallback performance is disappointing, since it underperforms a
+simple generic SHA-1 compiled to Wasm by a large margin.
+%
+The reason for this slowdown is likely the repeated \wasm function calls in
+place of plain arithmetic/bitwise operations of the Plain C version. If
+fallbacks performance was important, inlining would be a good approach to try.
+%
+In addition, the availability check functions proposed by
+\citetitle{hw-spec-wasm} would allow redirection to a separate non-intrinsics
+version if necessary.
+%
+Despite disappointing performance, fallbacks still successfully serve the goal
+of preserving \wasm hardware-independence.
+
+Overall, these results demonstrate feasibility of the approach. Achieving
+\MetricInlineWasmtimeHwwasmDivNative native execution qualifies for our ``near
+native'' performance goal.
