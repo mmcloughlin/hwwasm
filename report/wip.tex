@@ -1,13 +1,41 @@
-\section{Work in Progress}
+\section{Work in Progress: Auto-Derived Fallbacks}
 \label{sec:wip}
 
-\todo{work in progress}
+In this proof-of-concept, fallback functions were produced by compiling
+hand-written C functions.  However, this would not scale well to thousands of
+intrinsics, which presents the question of where the fallback functions would
+come from, and how we could be assured of their correctness. Modern instruction
+sets are expansive, so hand-written fallbacks would be tedious and error-prone
+to produce. At the same time, vendors such as ARM now distribute
+machine-readable specifications~\cite{arm-machine-readable-spec} of their
+instruction set semantics, and recent research~\cite{aslp} has helped make them
+slightly more practical to use.
 
-this presents the question of where the fallback functions would come from, and
-how we could be assured of their correctness. Modern instruction sets are
-expansive, so hand-written fallbacks would be tedious and error-prone to
-produce. At the same time, vendors such as ARM now distribute machine-readable
-specifications of their instruction set semantics, and recent research has
-helped make them slightly more practical to use. This project will explore the
-question of whether we can automatically derive fallback function definitions
-from the instruction set specifications.
+An initial goal of this project was to explore the question of whether we can
+automatically derive fallback function definitions from the instruction set
+specifications.
+
+We have made partial progress towards this goal, however not sufficient to get
+an end-to-end example working.  Specifically, we have implemented:
+
+\begin{itemize}
+    \item Parser for the AST output of the ASLp partial evaluator for the
+    machine-readable specification.
+    \item Initial IR format and translator from AST into IR.
+    \item Forked ASLp to support SHA-1 opcodes. These were not initially
+    supported due to unimplemented syntactic constructs that appear in their
+    semantics. In addition, additional optimization rules were required to make
+    the output consumable.
+\end{itemize}
+
+This work could be continued in future (\secref{future}). However, early
+indications suggested that this approach may be more challenging than a simple
+one pass translator from the specification's semantics language to Wasm.  In
+addition, the SHA-1 examples performed particularly badly in the ASLp tool's
+symbolic evaluator. Since they perform four rounds of SHA-1 they naturally
+produce deep nested expressions.  Achieving clean results would likely require
+several fixup passes in the translator.
+
+Given these challenges, and initial fruitful progress with engine integration,
+the focus of the project shifted in that direction.  The work-in-progress is
+nonetheless is included in the artifact for this project (\secref{artifacts})
