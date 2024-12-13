@@ -123,6 +123,7 @@ emit moves between the general purpose and vector register files to account for
 the mismatch.
 
 \subsection{Underwhelming Performance Results}
+\label{sec:interimresults}
 
 Performance of the SHA-1 benchmark compared to native improved rapidly as each
 intrinsic was implemented in the runtime, as the following table shows.
@@ -184,6 +185,7 @@ intrinsics API and the underlying target instructions. This motivates changes to
 the C layer, in order to provide a cleaner interface with the \wasm engine.
 
 \subsection{Refined Intrinsics Interface}
+\label{sec:refined}
 
 So far, we had treated the C API as identical to the intrinsics API the engine
 would intercept. However, this need not be the case. We achieved significant

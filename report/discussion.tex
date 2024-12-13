@@ -1,0 +1,72 @@
+\section{Discussion}
+
+In this section we discuss some lessons from this proof-of-concept.
+
+\paragraph{Challenge of Semantics Mismatches}
+
+Compilation via intrinsics passes through many layers: C intrinsics API, engine
+intrinsics API, \wasm operators, CLIF IR and machine code representation. Each
+of these has their own semantics and value representations.  The example of
+32-bit integer types in \wasm/CLIF causing redundant register moves showed that
+minor mismatches can have signifcant performance impacts. These details are
+important when the entire goal of hardware intrinsics in \wasm is reaching
+near-native performance. This project demonstrates just one use case, and we
+might hope that the idiosyncracies of the SHA-1 instruction set are not
+widespread. However, it seems likely that this broader problem of semantics
+mismatches could rear its head in other cases, for example when attempting to
+use wide vector types (e.g. Intel AVX-512) that do not have \wasm equivalents.
+
+\paragraph{Significance of the Intrinsics API}
+
+The switch to a refined intrinsics interface at the C layer (\secref{refined})
+produced massive performance gains. This suggests that near-native
+instrinsics performance requires:
+%
+\begin{enumerate}
+    \item Implementing C instrincs as inlined \wasm operators wherever possible.
+    This allows for improved code quality from the AOT compiler, and reduces the
+    work required by the engine.
+    \item Engine intrinsics API is as close as possible to machine instructions.
+    This makes the engine work essentially a passthrough, and limits the
+    optimizations required from its JIT.
+\end{enumerate}
+
+Making this distinction for a small group of 12 instructions needed for the
+proof of concept was easy enough.  It is interesting to think about how you
+might achieve this if the goal was to support hundreds or thousands of opcodes.
+For example, is there automation that could detect the cases that can be
+efficiency mapped to existing \wasm operators?
+
+\paragraph{Importance of Accompanying Optimizations}
+
+The underwhelming initial results (\secref{interimresults}) show that mererly
+mapping to the right machine instructions is not enough. Supporting optimization
+passes are critical. In this case, it was crucial to eliminate redundant moves
+between register classes, but it is reasonable to expect instances of this
+problem for other classes instrinsics. Optimizing JITs are designed for compile
+speed and therefore have a much more limited set of optimizations than a full
+AOT compiler. In this case we were able to work around missing Cranelift JIT
+optimizations by moving the problem to the AOT compilation layer, however it is
+not clear that would always be possible. Indeed, the remaining approximately
+30\% overhead over native execution may be a difficult gap to close, given the
+lack of optimizations such as instruction scheduling in JIT compilers. Overall,
+we might expect that \wasm intrinsics performance would be limited by JIT
+compiler optimization capabilities.
+
+\paragraph{Engineering Aspects}
+
+The fork of Wasmtime for this project was modified with this proof-of-concept in
+mind. While the engineering was reasonable, the approach taken is not one that
+would scale to adding hundreds or thousands of instrinsic calls. At the time of
+writing, the ARM intrinsics database contains 12,855 function calls, with 4,344
+in the Neon instruction set extension. A full production-grade version of the
+\code{wasm\_arm\_neon} library and accompanying engine support would be a
+substantial undertaking. You would almost certainly want automation and
+code-generation involved (discussed in Future Work, \secref{future}), but also
+certain parts of the integration method in \secref{engine} would not scale well.
+The current hand-written assembler would need to support many more instructions.
+You also probably would not want to actually extend the CLIF IR to support every
+intrinsic either, but instead perhaps support an explicit passthrough or
+intrinsic IR node that would effectively perform a trivial lowering to a wrapped
+machine instruction. None of these engineering challenges are intractable, but
+they would need careful thought.
