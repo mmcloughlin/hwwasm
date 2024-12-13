@@ -13,3 +13,4 @@
 *.snm
 *.synctex.gz
 _minted-*/
+*.gen.tex

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import json
 import collections
+import re
 from glob import glob
 
 
@@ -72,7 +74,7 @@ def read_results(root_dir):
     return results
 
 
-def report(results):
+def markdown(results):
     print(f"| Commit | Change | vs. Native |")
     print(f"| --- | --- | --- |")
     for result in results:
@@ -85,11 +87,88 @@ def report(results):
         print(f"| [`{commit}`]({commit_url}) | `{name}` | x{scale:.2f} |")
 
 
+def latex_safe_name(name):
+    # Replace numbers.
+    NUMBERS = [
+        ("0", "Zero"),
+        ("1", "One"),
+    ]
+    for (digit, word) in NUMBERS:
+        name = name.replace(digit, word)
+
+    # Only keep letters
+    return re.sub(r"[^a-zA-Z]", "", name)
+
+
+def latex_metrics(results):
+    for result in results:
+        print (f"% {result.name}")
+        for (name, run) in result.runs.items():
+            for (other_name, other) in result.runs.items():
+                if name == other_name:
+                    continue
+                scale = run["elapsed_ns"] / other["elapsed_ns"]
+                parts = ["metric", result.name, name, "div", other_name]
+                metric_name = "".join(part.title() for part in parts)
+                command_name = latex_safe_name(metric_name)
+                print(f"\\newcommand{{\\{command_name}}}{{{scale:.1f}x\\xspace}}")
+
+
+def format_intrinsics_list(intrinsics):
+    code_names = ["\\code{{{name}}}".format(name=name.replace("_", "\\_")) for name in intrinsics]
+    return ", ".join(code_names)
+
+
+def latex_iteration_table(results):
+    NAME_TO_INSTRINSICS = {
+        "sha1c": ["vsha1cq_u32"],
+        "sha1pm": ["vsha1pq_u32", "vsha1mq_u32"],
+        "sha1h": ["vsha1h_u32"],
+        "sha1su0": ["vsha1su0q_u32"],
+        "sha1su1": ["vsha1su1q_u32"],
+        "vaddq_u32": ["vaddq_u32"],
+        "vdupq_n_u32": ["vdupq_n_u32"],
+        "vgetq_lane_u32": ["vgetq_lane_u32"],
+        "vreinterpretq": ["vreinterpretq_u32_u8", "vreinterpretq_u8_u32"],
+        "vrev32q_u8": ["vrev32q_u8"],
+    }
+    print("\\begin{tabular}{cl}")
+    print("\\toprule")
+    print("vs. Native & Added Intrinsics (including all above)\\\\")
+    print("\\midrule")
+    for result in results:
+        name = result.name
+        if name not in NAME_TO_INSTRINSICS:
+            continue
+        native_run = result.native_run()
+        intrinsics_run = result.runs["wasmtime_hwwasm"]
+        scale = intrinsics_run["elapsed_ns"] / native_run["elapsed_ns"]
+        #commit = result.metadata["wasmtime_hwwasm_git_version"]
+        #commit_url = "https://github.com/mmcloughlin/hwwasmtime/commit/" + commit
+        intrinsics = format_intrinsics_list(NAME_TO_INSTRINSICS[name])
+        print(f"{scale:.1f}x & {intrinsics} \\\\")
+    print("\\bottomrule")
+    print("\\end{tabular}")
+
+
+COMMANDS = {
+    "markdown": markdown,
+    "latex_metrics": latex_metrics,
+    "latex_iteration_table": latex_iteration_table,
+}
+
 def main():
-    results = read_results("results")
+    # Options
+    command, path = sys.argv[1:]
+    cmd = COMMANDS[command]
+
+    # Read results
+    results = read_results(path)
     for result in results:
         result.validate()
-    report(results)
+
+    # Execute command
+    cmd(results)
 
 
 if __name__ == "__main__":

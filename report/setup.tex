@@ -1,4 +1,5 @@
 \section{Project Setup}
+\label{sec:setup}
 
 The \citetitle{hw-spec-wasm} proposal has many aspects to it. For the purposes
 of project scoping, we selected a representative motivating example to evaluate
@@ -107,13 +108,20 @@ four rounds of the compression function are:
 \snippet{c}{sha1_intrinsics_rounds.c}
 %
 Note that since the specialist instructions deal with vector registers, we also
-have to use other utility intrinsic functions such as \code{vgetq\_lane\_u32}
-and \code{vdupq\_n\_u32}.
+have to use other utility intrinsic functions, namely:
+%
+\snippet{c}{arm_neon_general.h}
+
 %
 Alongside the intrinsics-optimized version we also have an implementation of
 SHA-1 using plain C for comparison.
 %
 For evaluation purposes we also have: a unit test against a SHA-1 test
 vector to ensure correctness, and a microbenchmark to evaluate performance.
+
+The implementation was developed and tested first on a AArch64 native platform
+(Apple M1 with Clang toolchain). The goal is to provide a corresponding
+toolchain for \wasm that allows the same C implementation to execute essentially
+unchanged.
 
 \todo{baseline numbers for native vs generic}

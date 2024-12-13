@@ -12,6 +12,8 @@
 \usepackage{biblatex}
 \addbibresource{references.bib}
 
+\newcommand{\secref}[1]{Section~\ref{sec:#1}}
+
 \usepackage{minted}
 \setminted{fontsize=\small,autogobble,breaklines,xleftmargin=20pt}
 \newcommand{\snippet}[2]{\inputminted{#1}{snippets/#2}}
@@ -27,29 +29,34 @@
 
 \newcommand{\todo}[1]{{\ding{110}\ding{43}\textcolor{red}{TODO: #1}}\xspace}
 
+\input{metrics.gen}
+
 \begin{document}
 
 \title{Hardware Intrinsics in \wasml}
 \author{Michael McLoughlin \\ \texttt{mcloughlin@cmu.edu}}
 \maketitle
 
+\tableofcontents
+
 \input{introduction}
 \input{setup}
-
-\section{Intrinsics in \wasml}
-\emph{TODO}
-
-\section{Engine Integration}
-\emph{TODO}
+\input{intrinsics}
 
 \section{Results}
 \emph{TODO}
 
-\section{Lessons}
-\emph{TODO}
+\section{Discussion}
+\todo{discussion section}
+
+% challenge of semantics mismatches
+% importance of selecting right intrisics API
+% importance of accompanying optimizations
 
 \section{Further Work}
 \emph{TODO}
+
+% "official" builtin, rather than name matching
 
 \section*{Acknowledgements}
 \emph{TODO}

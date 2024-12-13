@@ -1,0 +1,207 @@
+\section{Intrinsics in \wasml}
+\label{sec:intrinsics}
+
+Our approach for AArch64 intrinsics in \wasm requires two main components:
+%
+\begin{itemize}
+    \item \emph{C Intrinsics Layer.}
+        This layer bridges ARM's C intrinsics API to actual intrinsics that will
+        be executable in a \wasm engine. In addition, we also want to provide
+        the capability to execute the same program with pure \wasm fallbacks. To
+        achieve this we provide a \code{wasm\_arm\_neon.h} header and
+        compatibility implementation \code{wasm\_arm\_neon.c}.
+        \todo{link filenames to source repo}
+    \item \emph{Engine Integration.}
+        Secondly, the target engine must support intrinsics compilation. That
+        is, it should be able to intercept calls to defined intrinsic functions
+        and JIT compile them to corresponding instructions.
+\end{itemize}
+
+These layers are tightly coupled, since the C layer and engine have to agree on
+the underlying function calls that will be treated specially.
+%
+Throughout the project, we learned that design choices at this interface are
+critical to the runtime performance of the generated \wasm.
+%
+We will see this by presenting the evolution of the implementation, starting
+with the baseline approach before discussing the refinements that were necessary
+to reach near-native performance.
+
+\subsection{Baseline C Intrinsics Layer}
+
+The first approach to C-to-\wasm mapping was to treat every ARM C function
+directly as an intrinsic in the engine as well. The \code{wasm\_arm\_neon.h}
+header contains declarations matching all required C intrinsics
+(\secref{setup}). Then \code{wasm\_arm\_neon.c} contains pure-\wasm fallback
+implementations, for example for the \code{vsha1cq\_u32} call:
+%
+\snippet{c}{vsha1cq_u32.c}
+
+Given this layer, we are able to compile both the SHA-1 intrinsics-backed
+implementation and the \code{wasm\_arm\_neon} library to \code{.wasm}. The \wasm
+binaries link and execute correctly, and pass the SHA-1 correctness test. This
+provides intrinsics fallback implementations by compilation from C.
+
+This fallback provides the benefit of platform compatibility, but the
+performance is poor at \MetricGenericWasmtimeBaselineDivNative times slower than
+the native executable.
+
+\todo{compare to the generic implementation compiled to wasm}
+
+\subsection{Engine Integration}
+
+The real benefits of hardware intrinsics come from JIT support in the \wasm
+engine. For this project we chose to work with Wasmtime~\cite{wasmtime}, a
+production-grade \wasm runtime backed by the Cranelift optimizing JIT compiler.
+This was selected on the basis of its existing high-quality code generation for
+the AArch64 backend, and to demonstrate feasibility in a realistic
+production-grade compiler.
+
+Wasmtime engine integration for each intrinsic requires:
+%
+\begin{enumerate}
+    \item \emph{Assembler Support.}
+        Cranelift has an integrated custom assembler, which has grown to support
+        instructions as needed. Therefore it does not support the SHA-1
+        intrinsics out of the box.
+    \item \emph{Register Allocation Metadata.}
+        The Cranelift register allocator requires use/def metadata about
+        instruction operands to compute liveness information.
+    \item \emph{New IR Instructions.}
+        Cranelift is an optimizing compiler with its own IR, known as ``CLIF''.
+        Threading through intrinsic calls from Wasmtime requires routing through
+        the IR, therefore each new instruction needs its a corresponding CLIF
+        instruction. Since CLIF already had precedent for adding
+        backend-specific instructions such as \code{x86\_pshufb}, we added new
+        instructions with the \code{aarch64} prefix.
+    \item \emph{Instruction Lowering.}
+        Cranelift implements IR-to-machine code lowering in a domain-specific
+        language called ISLE~\cite{isle}. ISLE defines pattern matching rules on IR
+        instruction sequences and determines the corresponding machine code that
+        will be emitted. Each new instruction required a new lowering rule.  In
+        the case of intrinsics these rules are deliberately simple, typically
+        just passing through the dedicated IR instruction to the assembler
+        format.
+        However, one complexity here is type transformations required from CLIF
+        types to the target machine instruction.
+    \item \emph{Call Interception.}
+        Finally, the remaining piece is interception of intrinsic function calls
+        to emit the corresponding CLIF IR instruction. This part of the
+        integration is arguably the most fragile. Functions are intercepted
+        based on their names. Names need not always be present, but if they are
+        will be present in the Name Custom Section (defined in the \wasml
+        Specification Appendix). The interception itself is simply a pattern
+        match on the name in Wasmtime's \wasm-to-CLIF translation logic,
+        emitting CLIF IR for each.
+\end{enumerate}
+
+Note that intrinsic C function handling fits in two categories:
+\begin{itemize}
+    \item \emph{``True'' Intrinsics.}
+        The SHA-1 C intrinsics themselves, such as \code{vsha1cq\_u32}, are
+        implemeted mostly as a passthrough from the intrinsic function call to
+        machine instruction, via CLIF IR.
+    \item \emph{Emulated.}
+        Many of the general vector intrinsics already have exact equivalents in
+        CLIF, and in fact \wasm too.  For example \code{vaddq\_u32} is a CLIF
+        \code{iadd} on the vector \code{I32x4} type.  Likewise,
+        \code{vgetq\_lane\_u32} is a CLIF \code{extractlane} instruction.
+\end{itemize}
+
+We added support for 12 intrinsics to Wasmtime: the SHA-1 instructions as
+``true'' intrinsics, and 6 general helpers lowered to existing CLIF
+instructions.
+
+One problem presented by the SHA-1 instructions in particular was a mismatch
+between their C API and the target machine instructions.  The C intrinsics API
+takes 32-bit arguments for the SHA-1 $E$ register, but the target instructions
+expect them to be in the low 32-bits of a vector register. \wasm and CLIF do not
+have a way to express this: 32-bit integers are expected to live in general
+purpose registers, not vector registers. As such, the ISLE lowering rules must
+emit moves between the general purpose and vector register files to account for
+the mismatch.
+
+\subsection{Underwhelming Performance Results}
+
+Performance of the SHA-1 benchmark compared to native improved rapidly as each
+intrinsic was implemented in the runtime, as the following table shows.
+
+\begin{center}
+\input{itertable.gen}
+\end{center}
+
+However, despite implementing almost all intrinsics (excluding load/store
+operations), the end result still isn't close to our ``near native'' goal.
+Inspecting generated code suggested a few reasons why this might be, and
+ultimately motivated a refinement of the intrinsics interface with substantially
+better performance.
+
+Inspection suggested the following possible issues with the generated code:
+%
+\begin{itemize}
+    \item \emph{Redundant Moves Between Register Classes.}
+        Moves between the general-purpose and vector register files that were
+        required in the lowering phase are persisted to the generated code.
+        Unlike full optimizing compilers such as GCC and Clang, optimzing JIT
+        compilers like Cranelift prioritize compile speed and accordingly do not
+        have backend-optimization passes that would be required to elide these
+        moves. Moves between register classes are known to cause significant
+        slowdowns in CPU pipelines.
+    \item \emph{Memory Operations.}
+        We did not implement Wasmtime support for the memory intrinsincs
+        \code{vld1q\_u32} and \code{vst1q\_u32} for vector load-store. When
+        Clang compiles these intrinsics it uses a memory base offset read from a
+        special global variable. It was not immediately clear how to correctly
+        lower the instrinsics without making assumptions about the Clang memory
+        behavior. This is likely resolvable, but it was more delicate than other
+        intrinsics that perform pure computation. As a result, the generated
+        code still contains function calls for load/store operations, which will
+        no doubt slow down reading the SHA-1 message to be hashed.
+    \item \emph{Instruction Scheduling.}
+        Again, due to compile speed design considerations in optimizing JIT
+        compilers, Cranelift does not have an instruction scheduling pass.
+        Cryptographic kernel code such as SHA-1 can have performance highly
+        dependent on instruction ordering, therefore the lack of an instruction
+        scheduling pass likely explains some of the difference from native.
+\end{itemize}
+
+The general theme behind these problems is that an optimizing JIT compiler has,
+by design, a more limited set of optimizaton passes. Therefore, it is unable to
+fix up sub-optimal code resulting from semantics mismatches between the C
+intrinsics API and the underlying target instructions. This motivates changes to
+the C layer, in order to provide a cleaner interface with the \wasm engine.
+
+\subsection{Refined Intrinsics Interface}
+
+So far, we had treated the C API as identical to the intrinsics API the engine
+would intercept. However, this need not be the case. We achieved significant
+performance gains by doing more at the \code{wasm\_arm\_neon} layer. Firstly, by
+bridging the the C intrinsic API to a different engine intrinsic API, and
+secondly inlining intrinsic functions that have direct \wasm equivalents.
+
+\paragraph{Bridging to Engine Intrinsics API}
+The redundant moves problem stems from a semantics mismatch between the C API
+and the corresponding instruction.  For example, \code{vsha1h\_u32} takes a
+\code{uint32\_t hash\_e} argument but should compile to \code{SHA1H Sd,Sn},
+where \code{Sn} is the low bits of a vector register. If the intrinsics call
+that reaches the \wasm engine persists this mismatch, then we have seen that an
+optimizing JIT is unlikely to have sufficient passes to fix it. But, what if we
+arranged for the intrinsic call that reaches the engine to already have a
+128-bit parameter type for \code{hash\_e}?
+
+We achieve this by implementing an additional layer, so the intrinsic understood
+by the engine can be different. Specifically, in the case of the \code{SHA1H}
+instruction:
+%
+\snippet{c}{__intrinsic_vsha1h_u32.h}
+%
+Here, the \code{\_\_intrinsic\_vsha1h\_u32} function is now the one that will be
+intercepted by the engine, and its API is the same as the assembly instruction.
+
+Notably, the redundant 32-to-128-bit moves still exist, but they now exist as
+inlined \wasm operators in the C source code (\code{i32x4.splat} and
+\code{i32x4.extract\_lane}). Clang is more likely to be able to optimize away
+these moves as an AOT compiler than a JIT compiler would be.
+
+\paragraph{Inlining Pure \wasm Intrinsics}
+\emph{TODO}
