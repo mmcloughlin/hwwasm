@@ -14,6 +14,8 @@
 
 \DeclareFieldFormat*{citetitle}{#1}
 \newcommand{\secref}[1]{Section~\ref{sec:#1}}
+\newcommand{\httpsurl}[1]{\href{https://#1}{\nolinkurl{#1}}}
+\newcommand{\github}[1]{\httpsurl{github.com/#1}}
 
 \usepackage{minted}
 \setminted{fontsize=\small,autogobble,breaklines,xleftmargin=20pt}
@@ -39,6 +41,7 @@
 \date{CMU 17770 Final Project Report}
 \maketitle
 
+\setcounter{tocdepth}{2}
 \tableofcontents
 
 \input{introduction}
@@ -49,9 +52,7 @@
 \input{wip}
 \input{future}
 \input{acknowledgements}
-
 \appendix
-
 \input{artifacts}
 
 \printbibliography

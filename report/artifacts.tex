@@ -1,2 +1,32 @@
 \section{Artifacts}
-\emph{TODO}
+
+\subsection{Hardware \wasm}
+
+Hardware intrinsics experimental repository:
+SHA-1 implementation and evaluation tools (\secref{setup}),
+results data,
+work-in-progress fallbacks generator (\secref{wip}),
+and this report.
+
+\begin{itemize}
+    \item Repository: \github{mmcloughlin/hwwasm}
+\end{itemize}
+
+\subsection{Wasmtime with Intrinsics}
+
+Wasmtime fork with hardware intrinsics support.
+
+\begin{itemize}
+    \item Repository: \github{mmcloughlin/hwwasmtime}
+    \item Fork Commits: \href{https://github.com/mmcloughlin/hwwasmtime/compare/v27.0.0...hwwasm}{\code{v27.0.0...hwwasm}}
+\end{itemize}
+
+\subsection{ASLp Fork}
+
+ASLp fork with support for symbolic evaluation of SHA-1 instruction
+specifications. This work contributed to the incomplete fallback function
+generator (\secref{wip}).
+
+\begin{itemize}
+    \item Repository: \github{mmcloughlin/aslp/tree/hwwasm}
+\end{itemize}
