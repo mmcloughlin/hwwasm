@@ -1,0 +1,63 @@
+\section{Further Work}
+\label{sec:future}
+
+Avenues for future work:
+
+\begin{itemize}
+    \item \emph{First-class \code{@builtin} Support.}
+        The most fragile part of the engine integration (\secref{engine}) is
+        intrinsic call interception, and its reliance on the custom name
+        section. This was reasonable from the point of view of a
+        point-of-concept, but a real implementation would want to add and handle
+        the \code{@builtin} attribute specially.
+    \item \emph{Fallbacks Performance.}
+        Our results show that the performance of \wasm fallbacks was very poor
+        (\secref{results}), even compared to a Plain C version.  While fallbacks
+        are still valuable for portability, it would be desirable to avoid
+        egregious performance penalties.  One fruitful avenue here might be
+        inlining fallbacks where possible.
+    \item \emph{Coverage.}
+        This project focussed on one example of interest and identified some
+        challenges (\secref{discussion}). However, we cannot know how
+        generalizable these lessons are without trying other classes of
+        intrinsics. It would be worth picking other represantitive use cases to
+        explore the space: for example, wide vector types like AVX-512 and
+        narrow floating point used in Machine Learning acceleration.
+    \item \emph{Other aspects of \citetitle{hw-spec-wasm} Proposal.}
+        This proof-of-concept did not explore custom types or the idea of a
+        shared instrinsics lowering database, both of which would be interesting
+        to pursue.
+    \item \emph{Fallback Auto-generation.}
+        In this proof-of-concept, fallback functions were produced by compiling
+        hand-written C.  It would be valuable to continue the work-in-progress
+        (\secref{wip}) to auto-generate fallback functions from vendor-provided
+        specifications.
+    \item \emph{Automation.}
+        The approach taken so far for engine integration was manageable at low
+        scale, but not for the many thousands of intrinsincs available in
+        AArch64. ARM does distribute machine-readable databases of their C
+        intrinsics API in JSON, together with the full semantics of their ISA.
+        While these databases are famously cumbersome to work with, it does
+        raise the prospect of automating large parts of the engine integration.
+        It would be interesting to see how far we could push the automated
+        approach.
+    \item \emph{Engineering.}
+        As discussed in \secref{discussion}, the engineering aspects of
+        integrating potentially thousands of intrinsics into a JIT engine would
+        need careful consideration.
+    \item \emph{Verification.}
+        Can we prove that the fallback definitions are semantically equivalent
+        to their machine-code counterparts? Authoritative vendor provided
+        specifications potentially make this a tractible problem.
+    \item \emph{Portable API Derivation.}
+        A more nebulous related research question concerns the challenge of
+        designing standardized portable instruction sets that enable performant
+        access to multiple target architectures.  \wasm has achieved this for
+        its core instruction set, abstracting over base ISAs of X86, AArch64,
+        RISC-V, and more.  To some extent the fixed SIMD instructions achieve
+        this goal, though relaxed SIMD proposal shows the gaps. In general
+        finding a portable abstraction layer over multiple ISA extensions is a
+        difficult problem.  Could automation or synthesis be applied to this
+        problem: given specifications for two or more instruction sets, can you
+        discover a portable ISA over them that minimizes the performance gap?
+\end{itemize}
