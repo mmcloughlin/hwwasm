@@ -10,7 +10,6 @@ Our approach for AArch64 intrinsics in \wasm requires two main components:
         the capability to execute the same program with pure \wasm fallbacks. To
         achieve this we provide a \code{wasm\_arm\_neon.h} header and
         compatibility implementation \code{wasm\_arm\_neon.c}.
-        \todo{link filenames to source repo}
     \item \emph{Engine Integration.}
         Secondly, the target engine must support intrinsics compilation. That
         is, it should be able to intercept calls to defined intrinsic functions
@@ -44,9 +43,9 @@ provides intrinsics fallback implementations by compilation from C.
 
 This fallback provides the benefit of platform compatibility, but the
 performance is poor at \MetricGenericWasmtimeBaselineDivNative times slower than
-the native executable.
-
-\todo{compare to the generic implementation compiled to wasm}
+the native executable. In fact, it is even
+\MetricGenericWasmtimeBaselineDivWasmtimeBaselineGeneric slower than the plain C
+version compiled to \wasm.
 
 \subsection{Engine Integration}
 \label{sec:engine}

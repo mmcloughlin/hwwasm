@@ -101,9 +101,10 @@ belongs in a vector register.
 
 \subsection{Optimization Target}
 
-Our target for the purposes of the project is an implementation of SHA-1 in C
-using the intrinsics interface above. To give a feel for the implementation,
-four rounds of the compression function are:
+Our target for the purposes of the project is an implementation of
+\codelink{example/sha1/sha1_intrinsics.c}{SHA-1 in C using the intrinsics
+interface} above. To give a feel for the implementation, four rounds of the
+compression function are:
 %
 \snippet{c}{sha1_intrinsics_rounds.c}
 %
@@ -114,10 +115,11 @@ have to use other utility intrinsic functions, namely:
 
 %
 Alongside the intrinsics-optimized version we also have an implementation of
-SHA-1 using plain C for comparison.
+\codelink{example/sha1/sha1_generic.c}{SHA-1 using plain C} for comparison.
 %
-For evaluation purposes we also have: a unit test against a SHA-1 test
-vector to ensure correctness, and a microbenchmark to evaluate performance.
+For evaluation purposes we also have: a \codelink{example/sha1/sha1_test.c}{unit
+test} against a SHA-1 test vector to ensure correctness, and a
+\codelink{example/sha1/sha1_bench.c}{microbenchmark} to evaluate performance.
 
 The implementation was developed and tested first on a AArch64 native platform
 (Apple M1 with Clang toolchain). The goal is to provide a corresponding

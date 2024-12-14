@@ -28,6 +28,9 @@
 \setminted{fontsize=\small,autogobble,breaklines,xleftmargin=20pt,ignorelexererrors,breakafter={()}}
 \newcommand{\snippet}[2]{\inputminted{#1}{snippets/#2}}
 
+\input{version.gen}
+\newcommand{\codelink}[2]{\href{https://github.com/mmcloughlin/hwwasm/blob/\gitversion/#1}{#2}}
+
 \newacro{wasm}[Wasm]{WebAssembly}
 \newcommand{\wasml}{\acl{wasm}\xspace}
 \newcommand{\wasm}{\ac{wasm}\xspace}

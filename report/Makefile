@@ -4,7 +4,7 @@ LATEXMKFLAGS=-shell-escape
 all: build
 
 .PHONY: build
-build: snippets results
+build: snippets results version
 	latexmk $(LATEXMKFLAGS) -pdf report
 
 .PHONY: preview
@@ -23,6 +23,10 @@ results:
 	../tools/results.py latex_intrinsics_table ../results/ > intrinsicstable.gen.tex
 	../tools/results.py latex_refined_table ../results/ > refinedtable.gen.tex
 	../tools/results.py latex_results_table ../results/ > resultstable.gen.tex
+
+.PHONY: version
+version:
+	./version.sh > version.gen.tex
 
 .PHONY: clean
 clean:
