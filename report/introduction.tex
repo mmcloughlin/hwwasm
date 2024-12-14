@@ -17,7 +17,7 @@ sacraficing \wasm's hardware- and platform-independence.
 % Problem
 
 One approach to domain-specific acceleration in \wasm is standards evolution.
-\wasm is not static: the community group is active and the proposals
+\wasm is not frozen: the community group is active and the proposals
 process~\cite{wasm-proposals} allows for principled extensions of the standard.
 For example, \wasm 2.0 added 128-bit SIMD instructions~\cite{wasm-simd} and
 later proposals allowed for faster performance~\cite{wasm-relaxed-simd}.
@@ -62,4 +62,6 @@ written against ARM's C intrinsics API can be executed both natively and via
 \wasm. We achieve \wasm execution by providing a Wasm AArch64 intrinsics C API
 layer, together with a fork of the Wasmtime \wasm runtime that supports
 intrinsic calls for a select group of AArch64 instructions. The end result is
-SHA-1 execution performance at only 1.3x native.
+SHA-1 execution performance at only \MetricInlineWasmtimeHwwasmDivNative native,
+demonstrating the feasibility of ``near native'' performance with hardware
+specialization.

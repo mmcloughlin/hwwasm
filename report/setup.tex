@@ -18,9 +18,9 @@ goal is to show the practicality of a potentially realistic use case.
 Therefore, we chose to target an implementation of SHA-1 in C using the
 \citetitle{acle}~\cite{acle}, which provides access to Cryptographic Extension
 instructions through the \code{arm\_neon.h} C header. The goal is an
-implementation of SHA-1 compiled against the ARM native intrinsics that could
-also work---with acceleration---when compiled and executed under a \wasm toolchain
-with intrinsics support.
+implementation of SHA-1 compiled against the ARM native intrinsics that runs
+natively \emph{and} could also work---with acceleration---when compiled and
+executed under a \wasm toolchain with intrinsics support.
 
 \subsection{SHA-1 Algorithm}
 
@@ -38,8 +38,8 @@ words of the input 512-bit message and then computing:
 W_i = \left( W_{i-3} \xor W_{i-8} \xor W_{i-14} \xor W_{i-16} \right) \rotl 1,
 \end{equation*}
 %
-where $\xor$ is bitwise exclusive or and $\rotl$ is bitwise left-rotate.
-The round update function is:
+for $i = 16, \ldots, 79$, where $\xor$ is bitwise exclusive or and $\rotl$ is
+bitwise left-rotate.  The round update function is:
 %
 \begin{align*}
 A_{i+1} &= \left( A_i \rotl 5 \right) + F_i(B_i, C_i, D_i) + E_i + K_i + W_i \\
@@ -55,7 +55,7 @@ state is obtained by adding final register values into the original input state.
 
 At a high-level, SHA-1 is a sequence of pure bitwise and arithmetic operations.
 It is simple to implement but inherently serial and difficult to vectorize a
-single computation (multiple parallel SHA-1 computations are trivially
+single computation (multiple independent SHA-1 computations are trivially
 vectorizable). Therefore, it benefits substantially from custom hardware
 acceleration.
 

@@ -45,7 +45,8 @@ This fallback provides the benefit of platform compatibility, but the
 performance is poor at \MetricGenericWasmtimeBaselineDivNative times slower than
 the native executable. In fact, it is even
 \MetricGenericWasmtimeBaselineDivWasmtimeBaselineGeneric slower than the plain C
-version compiled to \wasm.
+version compiled to \wasm, likely because of function calls and conversions
+between scalar and packed-vector representations of the SHA-1 register words.
 
 \subsection{Engine Integration}
 \label{sec:engine}
@@ -121,7 +122,7 @@ purpose registers, not vector registers. As such, the ISLE lowering rules must
 emit moves between the general purpose and vector register files to account for
 the mismatch.
 
-\subsection{Underwhelming Performance Results}
+\subsection{Interim Performance Results}
 \label{sec:interimresults}
 
 Performance of the SHA-1 benchmark compared to native improved rapidly as each
@@ -168,7 +169,9 @@ Inspection suggested the following possible issues with the generated code:
         behavior. This is likely resolvable, but it was more delicate than other
         intrinsics that perform pure computation. As a result, the generated
         code still contains function calls for load/store operations, which will
-        no doubt slow down reading the SHA-1 message to be hashed.
+        no doubt slow down reading the SHA-1 message to be hashed. However,
+        adhoc experiments on this aspect suggested the performance degredation
+        is real but not the predominant effect.
     \item \emph{Instruction Scheduling.}
         Again, due to compile speed design considerations in optimizing JIT
         compilers, Cranelift does not have an instruction scheduling pass.
@@ -229,14 +232,14 @@ layer before by implementing it with \wasm \code{i32x4.add}. If a C instrinsic
 can be implemented efficiently with pure \wasm operators, we could handle it
 entirely in the C layer, obviating any need to process the intrinsic in the engine.
 
-Therefore, the next change was to implement intrinsics as \code{inline} calls in
-the header where possible:
+Therefore, the next change was to implement selected intrinsics as \code{inline}
+calls in the header where possible:
 %
 \snippet{c}{vaddq_u32.h}
 
 Again, this has the benefit of improving the results from the AOT compilation
 since it sees more pure \wasm operators rather than opaque intrinsic calls.
-Intrinsic calls are limited to the cases that need them.
+Intrinsic calls are now limited to the cases that need them.
 
 \paragraph{Performance Gains from Refined Interface}
 

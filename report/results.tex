@@ -9,7 +9,11 @@ to alternative SHA-1 implementations and execution strategies.
 \input{resultstable.gen}
 \end{center}
 
-Intrinsics fallback performance is disappointing, since it underperforms a
+Overall, these results demonstrate feasibility of the approach. Achieving
+\MetricInlineWasmtimeHwwasmDivNative native execution qualifies for our ``near
+native'' performance goal.
+
+However, intrinsics fallback performance is disappointing, since it underperforms a
 simple generic SHA-1 compiled to Wasm by a large margin.
 %
 The reason for this slowdown is likely the repeated \wasm function calls in
@@ -22,7 +26,3 @@ version if necessary.
 %
 Despite disappointing performance, fallbacks still successfully serve the goal
 of preserving \wasm hardware-independence.
-
-Overall, these results demonstrate feasibility of the approach. Achieving
-\MetricInlineWasmtimeHwwasmDivNative native execution qualifies for our ``near
-native'' performance goal.
