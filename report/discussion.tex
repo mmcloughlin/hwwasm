@@ -9,7 +9,7 @@ Compilation via intrinsics passes through many layers: C intrinsics API, engine
 intrinsics API, \wasm operators, CLIF IR and machine code representation. Each
 of these has their own semantics and value representations.  The example of
 32-bit integer types in \wasm/CLIF causing redundant register moves showed that
-minor mismatches can have signifcant performance impacts. These details are
+minor mismatches can have significant performance impacts. These details are
 important when the entire goal of hardware intrinsics in \wasm is reaching
 near-native performance. This project demonstrates just one use case, and we
 might hope that the idiosyncracies of the SHA-1 instruction set are not
@@ -21,7 +21,7 @@ use wide vector types (e.g. Intel AVX-512) that do not have \wasm equivalents.
 
 The switch to a refined intrinsics interface at the C layer (\secref{refined})
 produced massive performance gains. This suggests that near-native
-instrinsics performance requires:
+intrinsics performance requires:
 %
 \begin{enumerate}
     \item Implementing C instrincs as inlined \wasm operators wherever possible.
@@ -40,11 +40,11 @@ efficiency mapped to existing \wasm operators?
 
 \paragraph{Importance of Accompanying Optimizations}
 
-The underwhelming initial results (\secref{interimresults}) show that mererly
+The underwhelming initial results (\secref{interimresults}) show that merely
 mapping to the right machine instructions is not enough. Supporting optimization
 passes are critical. In this case, it was crucial to eliminate redundant moves
 between register classes, but it is reasonable to expect instances of this
-problem for other classes instrinsics. Optimizing JITs are designed for compile
+problem for other classes intrinsics. Optimizing JITs are designed for compile
 speed and therefore have a much more limited set of optimizations than a full
 AOT compiler. In this case we were able to work around missing Cranelift JIT
 optimizations by moving the problem to the AOT compilation layer, however it is
@@ -58,7 +58,7 @@ compiler optimization capabilities.
 
 The fork of Wasmtime for this project was modified with this proof-of-concept in
 mind. While the engineering was reasonable, the approach taken is not one that
-would scale to adding hundreds or thousands of instrinsic calls. At the time of
+would scale to adding hundreds or thousands of intrinsic calls. At the time of
 writing, the ARM intrinsics database contains 12,855 function calls, with 4,344
 in the Neon instruction set extension. A full production-grade version of the
 \code{wasm\_arm\_neon} library and accompanying engine support would be a

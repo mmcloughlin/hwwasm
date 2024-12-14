@@ -12,7 +12,7 @@ extensions and domain-specific instructions, for example for cryptographic and
 machine-learning applications. As \wasm's adoption grows there is demand to
 expand the ``near native'' performance goal into domains that require these
 dedicated instruction sets.  At the same time, we would like to do so without
-sacraficing \wasm's hardware- and platform-independence.
+sacrificing \wasm's hardware- and platform-independence.
 
 % Problem
 
@@ -44,7 +44,7 @@ example: \todo{better example builtin function}
 %
 The intention is that the attribute signals to supporting engines that the
 function should be treated as an \emph{intrinsic}; that is, compiled down to a
-specific machine instruction or library kernel on supporting plaforms.
+specific machine instruction or library kernel on supporting platforms.
 Meanwhile, the function body exists to preserve the hardware-independence of
 \wasm. The so-called \emph{fallback function} can always be executed as a plain
 \wasm function on any platform. The proposal also discusses other aspects of the

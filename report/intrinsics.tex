@@ -100,7 +100,7 @@ Note that intrinsic C function handling fits in two categories:
 \begin{itemize}
     \item \emph{``True'' Intrinsics.}
         The SHA-1 C intrinsics themselves, such as \code{vsha1cq\_u32}, are
-        implemeted mostly as a passthrough from the intrinsic function call to
+        implemented mostly as a passthrough from the intrinsic function call to
         machine instruction, via CLIF IR.
     \item \emph{Emulated.}
         Many of the general vector intrinsics already have exact equivalents in
@@ -155,22 +155,22 @@ Inspection suggested the following possible issues with the generated code:
     \item \emph{Redundant Moves Between Register Classes.}
         Moves between the general-purpose and vector register files that were
         required in the lowering phase are persisted to the generated code.
-        Unlike full optimizing compilers such as GCC and Clang, optimzing JIT
+        Unlike full optimizing compilers such as GCC and Clang, optimizing JIT
         compilers like Cranelift prioritize compile speed and accordingly do not
         have backend-optimization passes that would be required to elide these
         moves. Moves between register classes are known to cause significant
         slowdowns in CPU pipelines.
     \item \emph{Memory Operations.}
-        We did not implement Wasmtime support for the memory intrinsincs
+        We did not implement Wasmtime support for the memory intrinsics
         \code{vld1q\_u32} and \code{vst1q\_u32} for vector load-store. When
         Clang compiles these intrinsics it uses a memory base offset read from a
         special global variable. It was not immediately clear how to correctly
-        lower the instrinsics without making assumptions about the Clang memory
+        lower the intrinsics without making assumptions about the Clang memory
         behavior. This is likely resolvable, but it was more delicate than other
         intrinsics that perform pure computation. As a result, the generated
         code still contains function calls for load/store operations, which will
         no doubt slow down reading the SHA-1 message to be hashed. However,
-        adhoc experiments on this aspect suggested the performance degredation
+        adhoc experiments on this aspect suggested the performance degradation
         is real but not the predominant effect.
     \item \emph{Instruction Scheduling.}
         Again, due to compile speed design considerations in optimizing JIT
@@ -181,7 +181,7 @@ Inspection suggested the following possible issues with the generated code:
 \end{itemize}
 
 The general theme behind these problems is that an optimizing JIT compiler has,
-by design, a more limited set of optimizaton passes. Therefore, it is unable to
+by design, a more limited set of optimization passes. Therefore, it is unable to
 fix up sub-optimal code resulting from semantics mismatches between the C
 intrinsics API and the underlying target instructions. This motivates changes to
 the C layer, in order to provide a cleaner interface with the \wasm engine.
@@ -228,7 +228,7 @@ We noted in \secref{engine} that some instructions are implemented as
 passthrough to machine instructions, but others can be translated to CLIF
 instructions instead. For example, \code{vaddq\_u32} can be translated to a CLIF
 \code{iadd} on the \code{I32x4} vector type.  We could even translate it at a
-layer before by implementing it with \wasm \code{i32x4.add}. If a C instrinsic
+layer before by implementing it with \wasm \code{i32x4.add}. If a C intrinsic
 can be implemented efficiently with pure \wasm operators, we could handle it
 entirely in the C layer, obviating any need to process the intrinsic in the engine.
 
@@ -259,6 +259,6 @@ We believe the reasons for these improvements are:
         and vector types are more likely to be elided by an AOT compiler with a
         full suite of optimization passes.
     \item \emph{Fidelity of Engine Intrinsics APIs.}
-        With an extra translation layer, the instrinsics handled by the engine
+        With an extra translation layer, the intrinsics handled by the engine
         have a closer semantic match to the target hardware instruction.
 \end{itemize}
