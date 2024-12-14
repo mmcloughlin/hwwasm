@@ -26,8 +26,19 @@
 \newcommand{\github}[1]{\httpsurl{github.com/#1}}
 
 \usepackage{minted}
-\setminted{fontsize=\small,autogobble,breaklines,xleftmargin=20pt,ignorelexererrors,breakafter={()}}
+\setminted{fontsize=\small,autogobble,breaklines,xleftmargin=20pt,breakafter={()}}
 \newcommand{\snippet}[2]{\inputminted{#1}{snippets/#2}}
+
+% Fix for red box around lexer errors, for minted versions that don't support
+% ignorelexererrors. See: https://tex.stackexchange.com/a/343506
+\usepackage{etoolbox}
+\usepackage{xpatch}
+\makeatletter
+\AtBeginEnvironment{minted}{\dontdofcolorbox}
+\def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+\xpatchcmd{\inputminted}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+\xpatchcmd{\mintinline}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+\makeatother
 
 \input{version.gen}
 \newcommand{\codelink}[2]{\href{https://github.com/mmcloughlin/hwwasm/blob/\gitversion/#1}{#2}}
