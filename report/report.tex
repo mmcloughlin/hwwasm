@@ -25,7 +25,7 @@
 \newcommand{\github}[1]{\httpsurl{github.com/#1}}
 
 \usepackage{minted}
-\setminted{fontsize=\small,autogobble,breaklines,xleftmargin=20pt}
+\setminted{fontsize=\small,autogobble,breaklines,xleftmargin=20pt,ignorelexererrors,breakafter={()}}
 \newcommand{\snippet}[2]{\inputminted{#1}{snippets/#2}}
 
 \newacro{wasm}[Wasm]{WebAssembly}
