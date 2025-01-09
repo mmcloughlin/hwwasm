@@ -11,6 +11,12 @@ build: snippets results version
 preview: LATEXMKFLAGS+=-pv
 preview: build
 
+.PHONY: website
+website: build
+	$(RM) -r website
+	mkdir -p website
+	cp report.pdf website/report.pdf
+
 .PHONY: snippets
 snippets:
 	./snippet.sh "Rounds 28-31" "vsha1su0q_u32" ../example/sha1/sha1_intrinsics.c > snippets/sha1_intrinsics_rounds.c

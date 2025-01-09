@@ -1,13 +1,19 @@
 name: report
 
-permissions:
-  contents: read
-
 on:
   push:
     branches:
       - main
   pull_request:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -22,6 +28,7 @@ jobs:
       - name: Build
         working-directory: report
         run: make
+
       - uses: actions/upload-artifact@v4
         with:
           name: report
@@ -29,3 +36,16 @@ jobs:
           if-no-files-found: error
           compression-level: 9
           retention-days: 3
+
+      - name: Build Website
+        working-directory: report
+        run: make website
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: report/website
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
