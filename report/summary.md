@@ -46,7 +46,7 @@ hardware instructions like `SHA1H`.
 Some lessons from this proof-of-concept, with the caveat that they may not
 generalize to other intrinsics domains:
 
-_Challenge of Semantics Mismatches_
+_Challenge of Semantics Mismatches._
 Compilation via intrinsics passes through many layers: C intrinsics API, engine
 intrinsics API, Wasm operators, CLIF IR and machine code representation. Each of
 these has their own semantics and value representations.  Earlier stages of this
@@ -65,11 +65,11 @@ problem of semantics mismatches could rear its head in other cases, for example
 when attempting to use wide vector types (e.g.  Intel AVX-512) that do not have
 Wasm equivalents.
 
-_Significance of the Intrinsics API_
+_Significance of the Intrinsics API._
 The design of the C API layer was critical in achieving near native performance.
 Specifically, it should be designed to limit the number of intrinsics required
 in the engine, and intrinsics offered by the engine should be as close as
-possible to the machine instructions. Therefore:
+possible to the machine instructions.  Therefore:
 
 * Implement C layer intrinsics as existing Wasm operators wherever possible. For
   example, the AArch64 intrinsic `vdupq_n_u32` can just be implemented as
@@ -97,6 +97,15 @@ Indeed, the remaining approximately 30% overhead over native execution may be a
 difficult gap to close, given the lack of optimizations such as instruction
 scheduling in JIT compilers. Overall, we might expect that Wasm intrinsics
 performance would be limited by JIT compiler optimization capabilities.
+
+_Fallback Performance._
+When the intrinsics implementation is executed under Wasm with the fallback
+implementations, the performance is very poor (over 9x native intrinsics).  In
+fact, it's even worse than a generic version of SHA-1 compiled to Wasm.  The
+function call overhead is likely a major problem, so inlining of fallbacks would
+likely be necessary for tolerable performance. Alternatively we could accept
+that fallback performance is not a goal, and the `is_available` functions are
+there to allow users to provide an alternative.
 
 _Engineering Aspects._
 The fork of Wasmtime for this project was modified with this proof-of-concept in
