@@ -3,13 +3,13 @@ Experiment in Hardware Intrinsics for WebAssembly
 
 ## Summary
 
-Proof of concept demonstrates that SHA-1 with dedicated AArch64 C instrinsics
-can be executed via Wasm intrisics in Wasmtime at 1.3x native performance.
+Proof of concept demonstrates that SHA-1 with dedicated AArch64 C intrinsics
+can be executed via Wasm intrinsics in Wasmtime at 1.3x native performance.
 
 Potential issues revealed by this experiment:
 
 * Semantics mismatches between C, Wasm and target instructions can eliminate
-  performace gains if not handled carefully.
+  performance gains if not handled carefully.
 * Peak performance may be limited by relatively simple optimizers in JIT engines
 * Supporting large sets of intrinsics in Wasm JITs would require careful
   engineering
@@ -42,7 +42,7 @@ These intrinsics are defined in `arm_neon.h`. The proof of concept provides an
 alternate [`wasm_arm_neon.h`](example/sha1/wasm_arm_neon.h) that the C code can
 be compiled against unchanged, and [pure Wasm
 fallbacks](example/sha1/wasm_arm_neon.c) that would work on any platform.
-However, when executed under the modified Wasmtime, calls to instrinsic
+However, when executed under the modified Wasmtime, calls to intrinsic
 functions such as `vsha1h_u32` are recognized and compiled directly to the
 corresponding hardware instructions like `SHA1H`.
 
@@ -64,9 +64,9 @@ purpose registers, therefore without careful handling the intrisincs calls are
 surrounded by redundant register moves between vector and general purpose
 register files (with a significant performance penalty).  These details are
 important when the entire goal of hardware intrinsics in Wasm is reaching
-near-native performance.  We might hope that the idiosyncracies of the SHA-1
+near-native performance.  We might hope that the idiosyncrasies of the SHA-1
 instruction set are not widespread. However, it seems possible that this broader
-problem of semantics mismatches could rear its head in other cases, for example
+problem of semantic mismatches could rear its head in other cases, for example
 when attempting to use wide vector types (e.g.  Intel AVX-512) that do not have
 Wasm equivalents.
 
@@ -89,7 +89,7 @@ possible to the machine instructions.  Therefore:
   `v128`, since these match the underlying `SHA1H` instruction more closely.
 
 _Importance of Accompanying Optimizations._
-The first version of SHA-1 via Wasm instrinsics had poor performance (3.2x
+The first version of SHA-1 via Wasm intrinsics had poor performance (3.2x
 native), showing that merely mapping to the right machine instructions is not
 enough. Supporting optimization passes are critical.  In the SHA-1 case, it was
 crucial to eliminate redundant moves between register classes, but it is
