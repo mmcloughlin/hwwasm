@@ -1,5 +1,5 @@
 # hwwasm
-Experiment in Hardware Intrinsics for WebAssembly
+Experiment in [Hardware Intrinsics for WebAssembly](https://github.com/WebAssembly/design/issues/1528)
 
 ## Summary
 
