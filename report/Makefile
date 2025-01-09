@@ -15,7 +15,7 @@ preview: build
 website: build
 	$(RM) -r website
 	mkdir -p website
-	cp report.pdf website/report.pdf
+	cp report.pdf website/hwwasm.pdf
 
 .PHONY: snippets
 snippets:
