@@ -16,15 +16,16 @@ Potential issues revealed by this experiment:
 
 ## Application
 
-I implemented a proof-of-concept for a representative use case, namely the SHA-1
-hash algorithm using the Cryptographic Extension on AArch64.  The prototype
-demonstrates how [C code written against ARM's C intrinsics
+The experiment provides a proof-of-concept for a representative use case, namely
+the SHA-1 hash algorithm using the Cryptographic Extension on AArch64.  The
+prototype demonstrates how [C code written against ARM's C intrinsics
 API](example/sha1/sha1_intrinsics.c) can be executed both natively and via Wasm.
 Wasm execution is achieved with a Wasm AArch64 intrinsics C API layer that
 serves as a drop-in replacement for native intrinsic header files.  In addition,
-I have a fork of Wasmtime with support for intrinsic calls for a select group of
-AArch64 instructions. The end result is SHA-1 execution via Wasm with intrinsics
-at 1.3x native AArch64 performance.
+I have a [fork of Wasmtime](https://github.com/mmcloughlin/hwwasmtime) with
+support for intrinsic calls for a select group of AArch64 instructions. The end
+result is SHA-1 execution via Wasm with intrinsics at 1.3x native AArch64
+performance.
 
 To give a feel for the implementation, four rounds of the SHA-1 compression
 function in C with AArch64 intrinsics are:
