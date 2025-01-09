@@ -22,6 +22,25 @@ header files".  In addition, I have a fork of Wasmtime with support for
 intrinsic calls for a select group of AArch64 instructions. The end result is
 SHA-1 execution via Wasm with intrinsics at 1.3x native AArch64 performance.
 
+To give a feel for the implementation, four rounds of the SHA-1 compression
+function in C with AArch64 intrinsics are:
+
+```c
+// Rounds 28-31
+e0 = vsha1h_u32(vgetq_lane_u32(abcd, 0));
+abcd = vsha1pq_u32(abcd, e1, t1);
+t1 = vaddq_u32(m1, vdupq_n_u32(K1));
+m2 = vsha1su1q_u32(m2, m1);
+m3 = vsha1su0q_u32(m3, m0, m1);
+```
+
+These intrinsics are defined in `arm_neon.h`. The proof of concept provides an
+alternate `wasm_arm_neon.{h,c}` that the C code can be compiled against
+unchanged, and pure Wasm implementations that would work on any platform.
+However, when executed under the modified Wasmtime calls to instrinsic functions
+such as `vsha1h_u32` are recognized and compiled directly to the corresponding
+hardware instructions like `SHA1H`.
+
 ## Lessons
 
 Some lessons from this proof-of-concept, with the caveat that they may not
