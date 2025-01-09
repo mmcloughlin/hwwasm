@@ -15,12 +15,14 @@ Potential issues revealed by this experiment:
 
 I implemented a proof-of-concept for a representative use case, namely the SHA-1
 hash algorithm using the Cryptographic Extension on AArch64.  The prototype
-demonstrates how C code written against ARM's C intrinsics API can be executed
-both natively and via Wasm.  Wasm execution is achieved with a Wasm AArch64
-intrinsics C API layer that serves as a drop-in replacement for native intrinsic
-header files".  In addition, I have a fork of Wasmtime with support for
-intrinsic calls for a select group of AArch64 instructions. The end result is
-SHA-1 execution via Wasm with intrinsics at 1.3x native AArch64 performance.
+demonstrates how [C code written against ARM's C intrinsics
+API](https://github.com/mmcloughlin/hwwasm/blob/3571b01b58a549a45d36e75930aa1af32b36ce80/example/sha1/sha1_intrinsics.c)
+can be executed both natively and via Wasm.  Wasm execution is achieved with a
+Wasm AArch64 intrinsics C API layer that serves as a drop-in replacement for
+native intrinsic header files.  In addition, I have a fork of Wasmtime with
+support for intrinsic calls for a select group of AArch64 instructions. The end
+result is SHA-1 execution via Wasm with intrinsics at 1.3x native AArch64
+performance.
 
 To give a feel for the implementation, four rounds of the SHA-1 compression
 function in C with AArch64 intrinsics are:
@@ -35,16 +37,18 @@ m3 = vsha1su0q_u32(m3, m0, m1);
 ```
 
 These intrinsics are defined in `arm_neon.h`. The proof of concept provides an
-alternate `wasm_arm_neon.{h,c}` that the C code can be compiled against
-unchanged, and pure Wasm implementations that would work on any platform.
-However, when executed under the modified Wasmtime calls to instrinsic functions
-such as `vsha1h_u32` are recognized and compiled directly to the corresponding
-hardware instructions like `SHA1H`.
+alternate
+[`wasm_arm_neon.h`](https://github.com/mmcloughlin/hwwasm/blob/3571b01b58a549a45d36e75930aa1af32b36ce80/example/sha1/wasm_arm_neon.h)
+that the C code can be compiled against unchanged, and [pure Wasm
+fallbacks](https://github.com/mmcloughlin/hwwasm/blob/3571b01b58a549a45d36e75930aa1af32b36ce80/example/sha1/wasm_arm_neon.c)
+that would work on any platform.  However, when executed under the modified
+Wasmtime, calls to instrinsic functions such as `vsha1h_u32` are recognized and
+compiled directly to the corresponding hardware instructions like `SHA1H`.
 
 ## Lessons
 
 Some lessons from this proof-of-concept, with the caveat that they may not
-generalize to other intrinsics domains:
+generalize to other intrinsics domains.
 
 _Challenge of Semantics Mismatches._
 Compilation via intrinsics passes through many layers: C intrinsics API, engine
@@ -123,4 +127,8 @@ explicit passthrough or intrinsic IR node that would effectively perform a
 trivial lowering to a wrapped machine instruction. None of these engineering
 challenges are intractable, but they would need careful thought.
 
-Full Report: https://mmcloughlin.com/hwwasm/hwwasm.pdf
+## Reference
+
+* [Full Report](https://mmcloughlin.com/hwwasm/hwwasm.pdf)
+* [SHA-1 with Wasm Intrinsics](https://github.com/mmcloughlin/hwwasm/tree/3571b01b58a549a45d36e75930aa1af32b36ce80/example/sha1)
+* [Experimental Wasmtime fork with Hardware Intrinsics](https://github.com/mmcloughlin/hwwasmtime)
