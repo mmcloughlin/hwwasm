@@ -1,2 +1,2 @@
 # hwwasm
-Hardware Intrinsics for WebAssembly
+Experiment in Hardware Intrinsics for WebAssembly
